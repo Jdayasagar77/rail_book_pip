@@ -1,46 +1,53 @@
-// ignore_for_file: use_build_context_synchronously
-
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
-import 'package:rail_book_pip/screens/sign_up.dart';
+import 'package:rail_book_pip/screens/login_screen.dart';
 
-class LogIn extends StatefulWidget {
-  const LogIn({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  State<LogIn> createState() => _LogInState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _LogInState extends State<LogIn> {
-  String email = "", password = "";
-
-  TextEditingController mailcontroller = new TextEditingController();
+class _SignUpState extends State<SignUp> {
+  String email = "", password = "", name = "";
+  TextEditingController namecontroller = new TextEditingController();
   TextEditingController passwordcontroller = new TextEditingController();
+  TextEditingController mailcontroller = new TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
 
-  userLogin() async {
-    try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
+  registration() async {
+    if (password != null&& namecontroller.text!=""&& mailcontroller.text!="") {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.orangeAccent,
             content: Text(
-              "No User Found for that Email",
-              style: TextStyle(fontSize: 18.0),
-            )));
-      } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.orangeAccent,
-            content: Text(
-              "Wrong Password Provided by User",
-              style: TextStyle(fontSize: 18.0),
-            )));
+          "Registered Successfully",
+          style: TextStyle(fontSize: 20.0),
+        )));
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                "Password Provided is too Weak",
+                style: TextStyle(fontSize: 18.0),
+              )));
+        } else if (e.code == "email-already-in-use") {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                "Account Already exists",
+                style: TextStyle(fontSize: 18.0),
+              )));
+        }
       }
     }
   }
@@ -55,10 +62,11 @@ class _LogInState extends State<LogIn> {
             children: [
               SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  height: 250,
+                                  height: 100,
+          
                   child: Image.asset(
-                    "assets/images/train1.png",
-                    fit: BoxFit.fitWidth,
+                    "assets/images/train2.jpg",
+                    fit: BoxFit.cover,
                   )),
               const SizedBox(
                 height: 30.0,
@@ -78,7 +86,31 @@ class _LogInState extends State<LogIn> {
                         child: TextFormField(
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please Enter E-mail';
+                              return 'Please Enter Name';
+                            }
+                            return null;
+                          },
+                          controller: namecontroller,
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Name",
+                              hintStyle: TextStyle(
+                                  color: Color(0xFFb2b7bf), fontSize: 18.0)),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 30.0,
+                      ),
+                      Container(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 2.0, horizontal: 30.0),
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFedf0f8),
+                            borderRadius: BorderRadius.circular(30)),
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Email';
                             }
                             return null;
                           },
@@ -100,19 +132,20 @@ class _LogInState extends State<LogIn> {
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
-                          controller: passwordcontroller,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please Enter Password';
                             }
                             return null;
                           },
+                          controller: passwordcontroller,
                           decoration: const InputDecoration(
                               border: InputBorder.none,
+                              
                               hintText: "Password",
                               hintStyle: TextStyle(
                                   color: Color(0xFFb2b7bf), fontSize: 18.0)),
-                     obscureText: true,   ),
+               obscureText: true,  ),
                       ),
                       const SizedBox(
                         height: 30.0,
@@ -121,11 +154,12 @@ class _LogInState extends State<LogIn> {
                         onTap: (){
                           if(_formkey.currentState!.validate()){
                             setState(() {
-                              email= mailcontroller.text;
+                              email=mailcontroller.text;
+                              name= namecontroller.text;
                               password=passwordcontroller.text;
                             });
                           }
-                          userLogin();
+                          registration();
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width,
@@ -136,7 +170,7 @@ class _LogInState extends State<LogIn> {
                                 borderRadius: BorderRadius.circular(30)),
                             child: const Center(
                                 child: Text(
-                              "Sign In",
+                              "Sign Up",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 22.0,
@@ -146,19 +180,6 @@ class _LogInState extends State<LogIn> {
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              GestureDetector(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> const BottomTabBarScreen()));
-                },
-                child: const Text("Forgot Password?",
-                    style: TextStyle(
-                        color: Color(0xFF8c8e98),
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w500)),
               ),
               const SizedBox(
                 height: 40.0,
@@ -176,30 +197,20 @@ class _LogInState extends State<LogIn> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  GestureDetector(
-                    onTap: (){
-                    //  AuthMethods().signInWithGoogle(context);
-                    },
-                    child: Image.asset(
-                      "assets/images/google.png",
-                      height: 45,
-                      width: 45,
-                      fit: BoxFit.cover,
-                    ),
+                  Image.asset(
+                    "assets/images/google.png",
+                    height: 45,
+                    width: 45,
+                    fit: BoxFit.cover,
                   ),
                   const SizedBox(
                     width: 30.0,
                   ),
-                  GestureDetector(
-                    onTap: (){
-                    //  AuthMethods().signInWithApple();
-                    },
-                    child: Image.asset(
-                      "assets/images/apple.png",
-                      height: 50,
-                      width: 50,
-                      fit: BoxFit.cover,
-                    ),
+                  Image.asset(
+                    "assets/images/apple.png",
+                    height: 50,
+                    width: 50,
+                    fit: BoxFit.cover,
                   )
                 ],
               ),
@@ -209,7 +220,7 @@ class _LogInState extends State<LogIn> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account?",
+                  const Text("Already have an account?",
                       style: TextStyle(
                           color: Color(0xFF8c8e98),
                           fontSize: 18.0,
@@ -220,10 +231,10 @@ class _LogInState extends State<LogIn> {
                   GestureDetector(
                     onTap: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => SignUp()));
+                          MaterialPageRoute(builder: (context) => const LogIn()));
                     },
                     child: const Text(
-                      "SignUp",
+                      "LogIn",
                       style: TextStyle(
                           color: Color(0xFF273671),
                           fontSize: 20.0,
