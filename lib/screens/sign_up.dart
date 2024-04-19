@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +19,7 @@ class _SignUpState extends State<SignUp> {
 
 final ImagePicker _picker = ImagePicker();
       XFile? _image;
+final db = FirebaseFirestore.instance;
 
   String email = "", password = "", firstname = "", lastname = "", mobile = "", dob = "";
   TextEditingController firstnamecontroller = new TextEditingController();
@@ -44,7 +46,19 @@ final ImagePicker _picker = ImagePicker();
           "Registered Successfully",
           style: TextStyle(fontSize: 20.0),
         )));
-        // ignore: use_build_context_synchronously
+
+        final user = <String, String>{
+  "firstname": firstnamecontroller.text,
+  "lastname": lastnamecontroller.text,
+  "dob": dobcontroller.text,
+   "email": mailcontroller.text,
+  "mobile": mobilecontroller.text,
+  "password": passwordcontroller.text,
+  "image":"",
+};
+
+// Add a new document with a generated ID
+db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge: true));        // ignore: use_build_context_synchronously
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
       } on FirebaseAuthException catch (e) {
