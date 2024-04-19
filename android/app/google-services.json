@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "710584985805",
+    "project_id": "railbook-10400",
+    "storage_bucket": "railbook-10400.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710584985805:android:6e9756abca6a94c0262184",
+        "android_client_info": {
+          "package_name": "com.example.rail_book_pip"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdjgH4MZWvpxKcvctH7PA3v9aCPyFbIgA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

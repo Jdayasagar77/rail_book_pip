@@ -27,21 +27,12 @@ class _LogInState extends State<LogIn> {
           .signInWithEmailAndPassword(email: email, password: password);
       Navigator.push(context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar( SnackBar(
             backgroundColor: Colors.orangeAccent,
             content: Text(
-              "No User Found for that Email",
-              style: TextStyle(fontSize: 18.0),
+              '${e.message}',
+              style: const TextStyle(fontSize: 18.0),
             )));
-      } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.orangeAccent,
-            content: Text(
-              "Wrong Password Provided by User",
-              style: TextStyle(fontSize: 18.0),
-            )));
-      }
     }
   }
 
@@ -53,15 +44,18 @@ class _LogInState extends State<LogIn> {
         child: Center(
           child: Column(
             children: [
+                const SizedBox(
+                height: 100.0,
+              ),
               SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 250,
+                  width: 100,
+                  height: 100,
                   child: Image.asset(
                     "assets/images/train1.png",
                     fit: BoxFit.fitWidth,
                   )),
               const SizedBox(
-                height: 30.0,
+                height: 15.0,
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
@@ -182,8 +176,8 @@ class _LogInState extends State<LogIn> {
                     },
                     child: Image.asset(
                       "assets/images/google.png",
-                      height: 45,
-                      width: 45,
+                      height: 25,
+                      width: 25,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -196,8 +190,8 @@ class _LogInState extends State<LogIn> {
                     },
                     child: Image.asset(
                       "assets/images/apple.png",
-                      height: 50,
-                      width: 50,
+                      height: 25,
+                      width: 25,
                       fit: BoxFit.cover,
                     ),
                   )

@@ -1,6 +1,9 @@
 
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
 import 'package:rail_book_pip/screens/login_screen.dart';
 
@@ -12,15 +15,27 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  String email = "", password = "", name = "";
-  TextEditingController namecontroller = new TextEditingController();
+
+final ImagePicker _picker = ImagePicker();
+      XFile? _image;
+
+  String email = "", password = "", firstname = "", lastname = "", mobile = "", dob = "";
+  TextEditingController firstnamecontroller = new TextEditingController();
+    TextEditingController lastnamecontroller = new TextEditingController();
+        TextEditingController dobcontroller = new TextEditingController();
+
+      TextEditingController mobilecontroller = new TextEditingController();
   TextEditingController passwordcontroller = new TextEditingController();
   TextEditingController mailcontroller = new TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
 
-  registration() async {
-    if (password != null&& namecontroller.text!=""&& mailcontroller.text!="") {
+
+
+
+
+ registration() async {
+    if (firstnamecontroller.text!= "" && mailcontroller.text!=""&& mobilecontroller.text!=""&& lastnamecontroller.text!="") {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
@@ -33,21 +48,12 @@ class _SignUpState extends State<SignUp> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Password Provided is too Weak",
-                style: TextStyle(fontSize: 18.0),
-              )));
-        } else if (e.code == "email-already-in-use") {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Account Already exists",
-                style: TextStyle(fontSize: 18.0),
-              )));
-        }
+        ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+            backgroundColor: Colors.orangeAccent,
+            content: Text(
+              "${e.message}",
+              style: const TextStyle(fontSize: 18.0),
+            )));
       }
     }
   }
@@ -60,18 +66,29 @@ class _SignUpState extends State<SignUp> {
         child: Center(
           child: Column(
             children: [
+               const SizedBox(
+                height: 100.0,
+              ),
               SizedBox(
                   width: MediaQuery.of(context).size.width,
                                   height: 100,
           
-                  child: Image.asset(
-                    "assets/images/train2.jpg",
-                    fit: BoxFit.cover,
-                  )),
+                  child: _image == null
+                ? const Text('No image selected.')
+                : Image.file(File(_image!.path)),
+                ),
               const SizedBox(
-                height: 30.0,
+                height: 10.0,
               ),
-              Padding(
+ FloatingActionButton(
+            onPressed: getImage,
+            tooltip: 'Pick Image',
+            child: const Icon(Icons.add_a_photo),
+          ),
+          const SizedBox(
+                height: 15.0,
+              ),
+                        Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: Form(
                   key: _formkey,
@@ -79,31 +96,80 @@ class _SignUpState extends State<SignUp> {
                     children: [
                       Container(
                         padding:
-                            const EdgeInsets.symmetric(vertical: 2.0, horizontal: 30.0),
+                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please Enter Name';
+                              return 'Please Enter First Name';
                             }
                             return null;
                           },
-                          controller: namecontroller,
+                          controller: firstnamecontroller,
                           decoration: const InputDecoration(
                               border: InputBorder.none,
-                              hintText: "Name",
+                              hintText: "First Name",
                               hintStyle: TextStyle(
-                                  color: Color(0xFFb2b7bf), fontSize: 18.0)),
+                                  color: Color(0xFFb2b7bf), fontSize: 12.0)),
                         ),
                       ),
                       const SizedBox(
-                        height: 30.0,
+                        height: 15.0,
+                      ),
+                       Container(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFedf0f8),
+                            borderRadius: BorderRadius.circular(30)),
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Last Name';
+                            }
+                            return null;
+                          },
+                          controller: lastnamecontroller,
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Last Name",
+                              hintStyle: TextStyle(
+                                  color: Color(0xFFb2b7bf), fontSize: 12.0)),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15.0,
+                      ),
+                   
+                       Container(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFedf0f8),
+                            borderRadius: BorderRadius.circular(30)),
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Date of Birth';
+                            }
+                            return null;
+                          },
+                          controller: dobcontroller,
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Date of Birth",
+                              hintStyle: TextStyle(
+                                  color: Color(0xFFb2b7bf), fontSize: 12.0)),
+                        ),
+                      ),
+                       const SizedBox(
+                        height: 15.0,
                       ),
                       Container(
                         padding:
-                            const EdgeInsets.symmetric(vertical: 2.0, horizontal: 30.0),
+                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
@@ -119,15 +185,39 @@ class _SignUpState extends State<SignUp> {
                               border: InputBorder.none,
                               hintText: "Email",
                               hintStyle: TextStyle(
-                                  color: Color(0xFFb2b7bf), fontSize: 18.0)),
+                                  color: Color(0xFFb2b7bf), fontSize: 12.0)),
                         ),
                       ),
                       const SizedBox(
-                        height: 30.0,
+                        height: 15.0,
+                      ),
+                       Container(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFedf0f8),
+                            borderRadius: BorderRadius.circular(30)),
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Mobile Number';
+                            }
+                            return null;
+                          },
+                          controller: mobilecontroller,
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Mobile",
+                              hintStyle: TextStyle(
+                                  color: Color(0xFFb2b7bf), fontSize: 12.0)),
+                        ),
+                      ),
+                       const SizedBox(
+                        height: 15.0,
                       ),
                       Container(
                         padding:
-                            const EdgeInsets.symmetric(vertical: 2.0, horizontal: 30.0),
+                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
@@ -141,10 +231,9 @@ class _SignUpState extends State<SignUp> {
                           controller: passwordcontroller,
                           decoration: const InputDecoration(
                               border: InputBorder.none,
-                              
                               hintText: "Password",
                               hintStyle: TextStyle(
-                                  color: Color(0xFFb2b7bf), fontSize: 18.0)),
+                                  color: Color(0xFFb2b7bf), fontSize: 12.0)),
                obscureText: true,  ),
                       ),
                       const SizedBox(
@@ -154,17 +243,21 @@ class _SignUpState extends State<SignUp> {
                         onTap: (){
                           if(_formkey.currentState!.validate()){
                             setState(() {
-                              email=mailcontroller.text;
-                              name= namecontroller.text;
-                              password=passwordcontroller.text;
+                              debugPrint('Sign Up');
+                              email = mailcontroller.text;
+                              firstname = firstnamecontroller.text;
+                              lastname = lastnamecontroller.text;
+                              dob = dobcontroller.text;
+                              mobile = mobilecontroller.text;
+                              password = passwordcontroller.text;
                             });
                           }
                           registration();
                         },
                         child: Container(
-                            width: MediaQuery.of(context).size.width,
+                            width: MediaQuery.of(context).size.width/2,
                             padding: const EdgeInsets.symmetric(
-                                vertical: 13.0, horizontal: 30.0),
+                                vertical: 5.0, horizontal: 10.0),
                             decoration: BoxDecoration(
                                 color: const Color(0xFF273671),
                                 borderRadius: BorderRadius.circular(30)),
@@ -182,13 +275,13 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               const SizedBox(
-                height: 40.0,
+                height: 30.0,
               ),
               const Text(
                 "or LogIn with",
                 style: TextStyle(
                     color: Color(0xFF273671),
-                    fontSize: 22.0,
+                    fontSize: 12.0,
                     fontWeight: FontWeight.w500),
               ),
               const SizedBox(
@@ -199,8 +292,8 @@ class _SignUpState extends State<SignUp> {
                 children: [
                   Image.asset(
                     "assets/images/google.png",
-                    height: 45,
-                    width: 45,
+                    height: 25,
+                    width: 25,
                     fit: BoxFit.cover,
                   ),
                   const SizedBox(
@@ -208,14 +301,14 @@ class _SignUpState extends State<SignUp> {
                   ),
                   Image.asset(
                     "assets/images/apple.png",
-                    height: 50,
-                    width: 50,
+                    height: 25,
+                    width: 25,
                     fit: BoxFit.cover,
                   )
                 ],
               ),
               const SizedBox(
-                height: 40.0,
+                height: 30.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -223,7 +316,7 @@ class _SignUpState extends State<SignUp> {
                   const Text("Already have an account?",
                       style: TextStyle(
                           color: Color(0xFF8c8e98),
-                          fontSize: 18.0,
+                          fontSize: 12.0,
                           fontWeight: FontWeight.w500)),
                   const SizedBox(
                     width: 5.0,
@@ -237,7 +330,7 @@ class _SignUpState extends State<SignUp> {
                       "LogIn",
                       style: TextStyle(
                           color: Color(0xFF273671),
-                          fontSize: 20.0,
+                          fontSize: 12.0,
                           fontWeight: FontWeight.w500),
                     ),
                   ),
@@ -249,4 +342,13 @@ class _SignUpState extends State<SignUp> {
       ),
     );
   }
+
+   Future getImage() async {
+        final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    
+        setState(() {
+          _image = image;
+        });
+      }
 }
+

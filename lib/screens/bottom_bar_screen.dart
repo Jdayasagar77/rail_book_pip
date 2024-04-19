@@ -24,9 +24,9 @@ class _BottomTabBarScreenState extends State<BottomTabBarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bottom Tab Bar Example'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Bottom Tab Bar Example'),
+      // ),
       body: _tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
