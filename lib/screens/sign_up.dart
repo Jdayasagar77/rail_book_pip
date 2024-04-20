@@ -1,9 +1,12 @@
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
 import 'package:rail_book_pip/screens/login_screen.dart';
@@ -19,13 +22,17 @@ class _SignUpState extends State<SignUp> {
 
 final ImagePicker _picker = ImagePicker();
       XFile? _image;
+      // Read bytes from the file object
+ 
+// base64 encode the bytes
+String? _base64String;
+
 final db = FirebaseFirestore.instance;
 
   String email = "", password = "", firstname = "", lastname = "", mobile = "", dob = "";
   TextEditingController firstnamecontroller = new TextEditingController();
     TextEditingController lastnamecontroller = new TextEditingController();
         TextEditingController dobcontroller = new TextEditingController();
-
       TextEditingController mobilecontroller = new TextEditingController();
   TextEditingController passwordcontroller = new TextEditingController();
   TextEditingController mailcontroller = new TextEditingController();
@@ -54,7 +61,7 @@ final db = FirebaseFirestore.instance;
    "email": mailcontroller.text,
   "mobile": mobilecontroller.text,
   "password": passwordcontroller.text,
-  "image":"",
+  "image":_base64String ?? "",
 };
 
 // Add a new document with a generated ID
@@ -359,9 +366,11 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
 
    Future getImage() async {
         final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    
+    Uint8List _bytes = await image!.readAsBytes();
+
         setState(() {
           _image = image;
+          _base64String = base64.encode(_bytes);
         });
       }
 }

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
 import 'package:rail_book_pip/screens/sign_up.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -15,7 +16,9 @@ class LogIn extends StatefulWidget {
 
 class _LogInState extends State<LogIn> {
   String email = "", password = "";
+late SharedPreferences prefs;
 
+// Initialize shared preferences
   TextEditingController mailcontroller = new TextEditingController();
   TextEditingController passwordcontroller = new TextEditingController();
 
@@ -25,6 +28,13 @@ class _LogInState extends State<LogIn> {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+                            prefs = await SharedPreferences.getInstance();
+
+if (FirebaseAuth.instance.currentUser != null) {
+  prefs.setString('userUID', FirebaseAuth.instance.currentUser!.uid);
+  debugPrint(FirebaseAuth.instance.currentUser?.uid);
+}  
+
       Navigator.push(context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar( SnackBar(

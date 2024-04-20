@@ -1,7 +1,48 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class MyAccountTab extends StatelessWidget {
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:rail_book_pip/models/constants.dart';
+import 'package:rail_book_pip/models/shared_preferences.dart';
+import 'package:rail_book_pip/screens/change_password.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class MyAccountTab extends StatefulWidget {
   const MyAccountTab({super.key});
+
+  @override
+  State<MyAccountTab> createState() => _MyAccountTabState();
+}
+
+class _MyAccountTabState extends State<MyAccountTab> {
+  
+
+// Initialize shared preferences
+
+ bool _isLoading=false; //bool variable created
+
+
+   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+   
+    SharedPref.getString("userUID").then((value) {
+      debugPrint(value);
+  final docRef = FirebaseFirestore.instance.collection("Users").doc(value);
+docRef.get().then(
+      (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        setState(() {
+              _data = data;
+        });
+    debugPrint(data['image']);
+      },
+      onError: (e) => print("Error getting document: $e"),
+    ); 
+    } );
+  }
+  var _data;
 
   @override
   Widget build(BuildContext context) {
@@ -14,25 +55,24 @@ class MyAccountTab extends StatelessWidget {
               SizedBox(
                   width: 100,
                   height: 100,
-                  child: Image.asset(
-                    "assets/images/train1.png",
-                    fit: BoxFit.fitWidth,
-                  )),
-              const SizedBox(
-                height: 15.0,
-              ),
-               const SizedBox(
-                  width: 100,
-                  height: 20,
-                  child: Text('Name'),
+                  child: Image.memory(base64Decode(_data['image']) 
+                  ),
                   ),
               const SizedBox(
                 height: 15.0,
               ),
-               const SizedBox(
+               SizedBox(
                   width: 100,
                   height: 20,
-                  child: Text('Email ID'),
+                  child: Text("${_data['firstname']}"),
+                  ),
+              const SizedBox(
+                height: 15.0,
+              ),
+               SizedBox(
+                  width: 100,
+                  height: 20,
+                  child: Text("${_data['email']}"),
                   ),
               const SizedBox(
                 height: 25.0,
@@ -62,7 +102,8 @@ class MyAccountTab extends StatelessWidget {
               ),
               GestureDetector(
                         onTap: (){
-                        
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => ChangePasswordPage()));
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width/2,
@@ -78,7 +119,9 @@ class MyAccountTab extends StatelessWidget {
                                   color: Colors.white,
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w500),
-                            ))),
+                            ),
+                            ),
+                            ),
                       ),
                         const SizedBox(
                 height: 125.0,
