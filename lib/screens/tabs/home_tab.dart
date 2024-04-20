@@ -1,56 +1,638 @@
 import 'package:flutter/material.dart';
 
+// ignore_for_file: sized_box_for_whitespace
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:rail_book_pip/controllers/traveller_selector.dart';
+import 'package:rail_book_pip/models/constants.dart';
+import 'package:rail_book_pip/scoped.dart';
+import 'package:rail_book_pip/select_traveller.dart';
+
+
+
 class HomeTab extends StatefulWidget {
-  const HomeTab({super.key});
+  const HomeTab({Key? key}) : super(key: key);
 
   @override
   State<HomeTab> createState() => _HomeTabState();
 }
 
-class _HomeTabState extends State<HomeTab> {
-  // Initial Selected Value 
-  String dropdownvalue = 'Item 1';    
-  
-  // List of items in our dropdown menu 
-  var items = [     
-    'Item 1', 
-    'Item 2', 
-    'Item 3', 
-    'Item 4', 
-    'Item 5', 
-  ]; 
+class _HomeTabState extends State<HomeTab>
+    with SingleTickerProviderStateMixin {
+  final keyOneRoute = GlobalKey<FormState>();
+  final keyRoundTrip = GlobalKey<FormState>();
+
+  late TabController tabController;
+
+  TextEditingController fromController = TextEditingController();
+  TextEditingController toController = TextEditingController();
+  TextEditingController departureController = TextEditingController();
+  TextEditingController travellersController = TextEditingController();
+  TextEditingController returnController = TextEditingController();
+
+  SelecterTravellerController adultController =
+      SelecterTravellerController(selected: 1);
+  SelecterTravellerController childrenController =
+      SelecterTravellerController();
+  SelecterTravellerController minorController = SelecterTravellerController();
+
+  List<Tab> tabs = const [
+    Tab(
+      text: "One route",
+    ),
+    Tab(
+      text: "Round trip",
+    ),
+  ];
+
   @override
-  Widget build(BuildContext context) {
-    return  SingleChildScrollView(
-child: Center(
-  child: Column(
-    children: [
-        DropdownButton( 
-                  
-                // Initial Value 
-                value: dropdownvalue, 
-                  
-                // Down Arrow Icon 
-                icon: const Icon(Icons.keyboard_arrow_down),     
-                  
-                // Array list of items 
-                items: items.map((String items) { 
-                  return DropdownMenuItem( 
-                    value: items, 
-                    child: Text(items), 
-                  ); 
-                }).toList(), 
-                // After selecting the desired option,it will 
-                // change button value to selected value 
-                onChanged: (String? newValue) {  
-                  setState(() { 
-                    dropdownvalue = newValue!; 
-                  }); 
-                }, 
-              ), 
-    ],
-  ),
-),
+  void initState() {
+    tabController = TabController(length: tabs.length, vsync: this);
+    departureController.text =
+        DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY)
+            .format(DateTime.now());
+    returnController.text = DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY)
+        .format(DateTime(DateTime.tuesday));
+    travellersController.text = "1 adult.";
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+  Widget customContainer(BuildContext context, Widget body, double height) {
+    var media = MediaQuery.of(context).size;
+
+    return Card(
+      borderOnForeground: false,
+      elevation: 0.1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        height: height,
+        width: media.width,
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(13)),
+        child: DefaultTextStyle(
+          style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w100),
+          child: body,
+        ),
+      ),
     );
   }
+
+  selectTravellers(BuildContext context) {
+    setState(() {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Container(
+                height: 225,
+                width: 225,
+                child: ListView(
+                  children: [
+                    ChangeNotifierProvider(
+                      create: (_) => SelecterTravellerController(
+                          selected: adultController.selected),
+                      child: SelectTraveller(
+                        ageRange: "15 - ahead",
+                        title: "Adults",
+                        controller: adultController,
+                      ),
+                    ),
+                    ChangeNotifierProvider(
+                        create: (_) => SelecterTravellerController(
+                            selected: childrenController.selected),
+                        child: SelectTraveller(
+                          ageRange: "5 - 14 ",
+                          title: "Children",
+                          controller: childrenController,
+                        )),
+                    ChangeNotifierProvider(
+                        create: (_) => SelecterTravellerController(
+                            selected: minorController.selected),
+                        child: SelectTraveller(
+                          ageRange: "0 - 4",
+                          title: "Minor",
+                          controller: minorController,
+                        )),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      setState(() {
+                        travellersController.text =
+                            "${adultController.text} adults, ${childrenController.text} children, ${minorController.text} minors.";
+                        Navigator.of(context).pop();
+                      });
+                    },
+                    child: const Text("Done"))
+              ],
+            );
+          });
+    });
+  }
+
+  void openDatePicker(BuildContext context) {
+    setState(() {
+      showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime.now(),
+              lastDate: DateTime(2030))
+          .then((value) {
+        setState(() {
+          departureController.text =
+              DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY).format(value!);
+        });
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    late Query searchQuery;
+
+      return Scaffold(
+          body: CustomScrollView(
+        slivers: [
+          /*
+          SliverAppBar(
+            //backgroundColor: primary,
+            title: const Text("Search Trips",
+                style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20)),
+            elevation: 0,
+            centerTitle: true,
+            expandedHeight: 175,
+            flexibleSpace: kToolbarHeight >= 200
+                ? Container()
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 55, 0, 0),
+                    child: ListView(
+                      children: [
+                        Text(
+                            model.isLogged()
+                                ? "Hey,  ${UserModel.userData["name"]} Welcome back!"
+                                : "Hey, Welcome back!",
+                            textAlign: TextAlign.start,
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 20,
+                                color: Colors.white54)),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        const Text("Where we will\ngo today?",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                color: Colors.white))
+                      ],
+                    ),
+                  ),
+            systemOverlayStyle: const SystemUiOverlayStyle(
+                statusBarIconBrightness: Brightness.light,
+                statusBarBrightness: Brightness.light,
+                //statusBarColor: primary30
+                ),
+          ),
+          */
+          SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                const SizedBox(height: 10),
+                const Text("Your next trip detail",
+                    style: TextStyle(
+                        fontSize: 14,
+                      //  color: grey,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 5),
+                customContainer(
+                    context,
+                    DefaultTabController(
+                      length: 2,
+                      child: Column(
+                        children: [
+                          TabBar(
+                              controller: tabController,
+                         //     labelColor: swatch,
+                            //  unselectedLabelColor: grey,
+                              labelStyle: const TextStyle(fontSize: 16),
+                            //  indicatorColor: swatch,
+                            /*
+                              indicator: MaterialIndicator(
+                                height: 2,
+                                strokeWidth: 10,
+                                topLeftRadius: 8,
+                                topRightRadius: 8,
+                                bottomLeftRadius: 8,
+                                bottomRightRadius: 8,
+                                horizontalPadding: 50,
+                                color: swatch,
+                              ),
+                              */
+                              tabs: tabs),
+                          Expanded(
+                              child: TabBarView(
+                            controller: tabController,
+                            children: [
+                              oneRouteTrip(
+                                  keyOneRoute,
+                                  () {
+                                    searchQuery = Query(
+                                        from: fromController.text,
+                                        to: toController.text,
+                                        departure: departureController.text,
+                                        returnDate: returnController.text,
+                                        totalPassengers: int.parse(
+                                                adultController.text
+                                                    .toString()) +
+                                            int.parse(childrenController.text) +
+                                            int.parse(minorController.text),
+                                        passengers: {
+                                          "adults": int.parse(
+                                              adultController.text.toString()),
+                                          "children": int.parse(
+                                              childrenController.text),
+                                          "minors":
+                                              int.parse(minorController.text),
+                                        });
+                                    //if (keyOneRoute.currentState!.validate()) {
+                                     /// QueryModel.of(context)
+                                     //     .setQuery(searchQuery);
+/*
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) {
+                                        return const SearchResultPage();
+                                      }
+                                      ),
+                                      );
+                                      */
+                                   // }
+                                  },
+                                  () {
+                                    openDatePicker(context);
+                                  },
+                                  fromController,
+                                  toController,
+                                  departureController,
+                                  travellersController,
+                                  () {
+                                    selectTravellers(context);
+                                  }),
+                              roundTrip(
+                                  keyRoundTrip,
+                                  () {
+                                    searchQuery = Query(
+                                        from: fromController.text,
+                                        to: toController.text,
+                                        departure: departureController.text,
+                                        returnDate: returnController.text,
+                                        passengers: {
+                                          "adults": int.parse(
+                                              adultController.text.toString()),
+                                          "children": int.parse(
+                                              childrenController.text),
+                                          "minors":
+                                              int.parse(minorController.text)
+                                        });
+                                        /*
+                                    if (keyRoundTrip.currentState!.validate()) {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) {
+                                        return const SearchResultPage();
+                                      }));
+                                    }
+                                    */
+                                  },
+                                  () {
+                                    openDatePicker(context);
+                                  },
+                                  fromController,
+                                  toController,
+                                  departureController,
+                                  travellersController,
+                                  returnController,
+                                  () {
+                                    selectTravellers(context);
+                                  })
+                            ],
+                          ))
+                        ],
+                      ),
+                    ),
+                    MediaQuery.of(context).size.height / 1.8),
+                const SizedBox(height: 24),
+                const Text("Trips from your current location"),
+                const SizedBox(height: 5),
+             /* 
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * .5,
+                  child: Expanded(
+                      child: FutureBuilder<List<Trip>>(
+                    future:
+                        TripProvider.fetchTripsFromCurrentLocation("Gurgaon"),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text("${snapshot.error}"),
+                        );
+                      }
+                      //sort the result
+                      var result = snapshot.data!;
+
+                      if (result.isNotEmpty) {
+                        return ListView.builder(
+                            itemCount: result.length,
+                            itemBuilder: ((context, index) {
+                              return InkWell(
+                                child: TripTile(
+                                  trip: snapshot.data![index],
+                                ),
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return TripDetail(
+                                      trip: snapshot.data![index],
+                                      //query: model.currentQuery!,
+                                    );
+                                  }));
+                                },
+                              );
+                            }));
+                      } else {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "No result found",
+                                style: Theme.of(context).textTheme.headline5,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                  )),
+                )
+                */
+              ])))
+        ],
+      ));
+    ;
+  }
+}
+
+Widget oneRouteTrip(
+    GlobalKey<FormState> formKey,
+    VoidCallback onClickSearch,
+    VoidCallback onDateClick,
+    TextEditingController from,
+    TextEditingController to,
+    TextEditingController departure,
+    TextEditingController travellers,
+    VoidCallback onClickTravellers) {
+  return Form(
+      key: formKey,
+      child: ListView(
+        children: [
+          TextFormField(
+            controller: from,
+            validator: (str) {
+              if (str!.isEmpty) {
+                return "Please Enter a valid argument";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                hintText: "From",
+                prefixIcon:
+                    const Icon(Icons.flight_takeoff_sharp,
+                    // color: primary
+                     ),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                label: const Text("From"),
+                border: OutlineInputBorder(
+                    //borderSide: const BorderSide(color: grey1, width: 0.2),
+                    borderRadius: BorderRadius.circular(13))),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: to,
+            validator: (str) {
+              if (str!.isEmpty) {
+                return "Please Enter a valid argument";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                hintText: "To",
+                prefixIcon: const Icon(Icons.flight_land_sharp,
+                // color: primary
+                 ),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                label: const Text("To"),
+                border: OutlineInputBorder(
+                  //  borderSide: const BorderSide(color: grey1, width: 0.2),
+                    borderRadius: BorderRadius.circular(13))),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: departure,
+            onTap: onDateClick,
+            validator: (str) {
+              if (str!.isEmpty) {
+                return "Please Enter a valid argument";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                hintText: "Departure",
+                prefixIcon: const Icon(Icons.date_range_sharp,
+                // color: primary
+                 ),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                label: const Text("Departure"),
+                border: OutlineInputBorder(
+                  //  borderSide: const BorderSide(color: grey1, width: 0.2),
+                    borderRadius: BorderRadius.circular(13))),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: travellers,
+            onTap: onClickTravellers,
+            validator: (str) {
+              if (str!.isEmpty) {
+                return "Please Enter a valid argument";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                hintText: "Travellers",
+                prefixIcon: const Icon(Icons.people_sharp,
+                // color: primary
+                 ),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                label: const Text("Travellers"),
+                border: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                    //  color: grey1,
+                       width: 0.2),
+                    borderRadius: BorderRadius.circular(13))),
+          ),
+          const SizedBox(height: 25),
+          ElevatedButton(onPressed: () { 
+
+           }, child: const Text('Search'),
+             
+              ),
+        ],
+      ));
+}
+
+Widget roundTrip(
+    GlobalKey<FormState> formKey,
+    VoidCallback onClickSearch,
+    VoidCallback onDateClick,
+    TextEditingController from,
+    TextEditingController to,
+    TextEditingController departure,
+    TextEditingController travellers,
+    TextEditingController returnController,
+    VoidCallback onClickTravellers) {
+  return Form(
+      key: formKey,
+      child: ListView(
+        children: [
+          TextFormField(
+            controller: from,
+            validator: (str) {
+              if (str!.isEmpty) {
+                return "Please Enter a valid argument";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                hintText: "From",
+                prefixIcon:
+                    const Icon(Icons.flight_takeoff_sharp,
+                    // color: primary
+                     ),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                label: const Text("From"),
+                border: OutlineInputBorder(
+                  //  borderSide: const BorderSide(color: grey1, width: 0.2),
+                    borderRadius: BorderRadius.circular(13))),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: to,
+            validator: (str) {
+              if (str!.isEmpty) {
+                return "Please Enter a valid argument";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                hintText: "To",
+                prefixIcon: const Icon(Icons.flight_land_sharp,
+                // color: primary
+                 ),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                label: const Text("To"),
+                border: OutlineInputBorder(
+                  //  borderSide: const BorderSide(color: grey1, width: 0.2),
+                    borderRadius: BorderRadius.circular(13))),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: departure,
+            onTap: onDateClick,
+            validator: (str) {
+              if (str!.isEmpty) {
+                return "Please Enter a valid argument";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                hintText: "Departure",
+                prefixIcon: const Icon(Icons.date_range_sharp,
+                // color: primary
+                 ),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                label: const Text("Departure"),
+                border: OutlineInputBorder(
+                  //  borderSide: const BorderSide(color: grey1, width: 0.2),
+                    borderRadius: BorderRadius.circular(13))),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: returnController,
+            onTap: onDateClick,
+            validator: (str) {
+              if (str!.isEmpty) {
+                return "Please Enter a valid argument";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                hintText: "Return",
+                prefixIcon: const Icon(Icons.date_range_sharp,
+                // color: primary
+                 ),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                label: const Text("Return"),
+                border: OutlineInputBorder(
+                  //  borderSide: const BorderSide(color: grey1, width: 0.2),
+                    borderRadius: BorderRadius.circular(13))),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: travellers,
+            onTap: onClickTravellers,
+            validator: (str) {
+              if (str!.isEmpty) {
+                return "Please Enter a valid argument";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+                hintText: "Travellers",
+                prefixIcon: const Icon(Icons.people_sharp,
+                // color: primary
+                 ),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                label: const Text("Travellers"),
+                border: OutlineInputBorder(
+                  //  borderSide: const BorderSide(color: grey1, width: 0.2),
+                    borderRadius: BorderRadius.circular(13))),
+          ),
+          const SizedBox(height: 25),
+        ElevatedButton(onPressed: () { 
+
+           }, child: const Text('Search'),
+             
+              ),
+        ],
+      ))
+      ;
 }
