@@ -95,7 +95,10 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                                   height: 100,
           
                   child: _image == null
-                ? const Text('No image selected.')
+                ? const Text(
+                  'No image selected.',
+                  textAlign: TextAlign.center,
+                )
                 : Image.file(File(_image!.path)),
                 ),
               const SizedBox(
@@ -296,7 +299,7 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                 ),
               ),
               const SizedBox(
-                height: 30.0,
+                height: 15.0,
               ),
               const Text(
                 "or LogIn with",
@@ -306,7 +309,7 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                     fontWeight: FontWeight.w500),
               ),
               const SizedBox(
-                height: 30.0,
+                height: 10.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -329,7 +332,7 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                 ],
               ),
               const SizedBox(
-                height: 30.0,
+                height: 10.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:rail_book_pip/models/constants.dart';
 import 'package:rail_book_pip/models/shared_preferences.dart';
 import 'package:rail_book_pip/screens/change_password.dart';
+import 'package:rail_book_pip/screens/edit_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyAccountTab extends StatefulWidget {
@@ -79,7 +80,9 @@ docRef.get().then(
               ),
               GestureDetector(
                         onTap: (){
-                        
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => EditUserDetailsPage()));
+                   
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width/2,
