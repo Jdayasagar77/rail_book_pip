@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:rail_book_pip/models/constants.dart';
 import 'package:rail_book_pip/models/shared_preferences.dart';
 import 'package:rail_book_pip/screens/change_password.dart';
 import 'package:rail_book_pip/screens/edit_user.dart';
+import 'package:rail_book_pip/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyAccountTab extends StatefulWidget {
@@ -22,7 +22,11 @@ class _MyAccountTabState extends State<MyAccountTab> {
 
  bool _isLoading=false; //bool variable created
 
-
+void logoutUser() async {
+SharedPreferences prefs = await SharedPreferences.getInstance();
+prefs.clear();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const LogIn()));
+}
    @override
   void initState() {
     // TODO: implement initState
@@ -82,7 +86,6 @@ docRef.get().then(
                         onTap: (){
                         Navigator.push(context,
                           MaterialPageRoute(builder: (context) => EditUserDetailsPage()));
-                   
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width/2,
@@ -131,14 +134,14 @@ docRef.get().then(
               ),
               GestureDetector(
                         onTap: (){
-                        
+                        logoutUser();
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width/2,
                             padding: const EdgeInsets.symmetric(
                                 vertical: 5.0, horizontal: 10.0),
                             decoration: BoxDecoration(
-                                color: Color.fromARGB(255, 0, 0, 0),
+                                color: const Color.fromARGB(255, 0, 0, 0),
                                 borderRadius: BorderRadius.circular(30)),
                             child: const Center(
                                 child: Text(

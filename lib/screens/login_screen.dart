@@ -4,8 +4,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
+import 'package:rail_book_pip/screens/razor_pay.dart';
 import 'package:rail_book_pip/screens/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+
+class Page1 extends StatelessWidget {
+  const Page1({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: LogIn(),
+    );
+  }
+}
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -29,9 +42,13 @@ late SharedPreferences prefs;
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
                             prefs = await SharedPreferences.getInstance();
-
+                           prefs.setBool("isLoggedIn", true);
+                           prefs.setString('userEmail', email);
+                           prefs.setString('userPassword', password);
 if (FirebaseAuth.instance.currentUser != null) {
   prefs.setString('userUID', FirebaseAuth.instance.currentUser!.uid);
+  
+
   debugPrint(FirebaseAuth.instance.currentUser?.uid);
 }  
 
@@ -130,6 +147,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                             });
                           }
                           userLogin();
+
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width,
@@ -156,8 +174,9 @@ if (FirebaseAuth.instance.currentUser != null) {
               ),
               GestureDetector(
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> const BottomTabBarScreen()));
-                },
+  Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => const Payment()));
+                                   },
                 child: const Text("Forgot Password?",
                     style: TextStyle(
                         color: Color(0xFF8c8e98),

@@ -6,10 +6,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
 import 'package:rail_book_pip/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -26,7 +26,7 @@ final ImagePicker _picker = ImagePicker();
  
 // base64 encode the bytes
 String? _base64String;
-
+late SharedPreferences prefs;
 final db = FirebaseFirestore.instance;
 
   String email = "", password = "", firstname = "", lastname = "", mobile = "", dob = "";
@@ -52,7 +52,9 @@ final db = FirebaseFirestore.instance;
             content: Text(
           "Registered Successfully",
           style: TextStyle(fontSize: 20.0),
-        )));
+        ),
+        ),
+        );
 
         final user = <String, String>{
   "firstname": firstnamecontroller.text,
@@ -65,7 +67,12 @@ final db = FirebaseFirestore.instance;
 };
 
 // Add a new document with a generated ID
-db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge: true));        // ignore: use_build_context_synchronously
+db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge: true)); 
+                      prefs = await SharedPreferences.getInstance();
+                    
+                           prefs.setBool("isLoggedIn", true);     
+                             prefs.setString('userUID', userCredential.user!.uid);
+   // ignore: use_build_context_synchronously
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
       } on FirebaseAuthException catch (e) {

@@ -4,6 +4,17 @@ import 'package:rail_book_pip/screens/tabs/home_tab.dart';
 import 'package:rail_book_pip/screens/tabs/my_account_tab.dart';
 import 'package:rail_book_pip/screens/tabs/my_transactions_tab.dart';
 
+class Page2 extends StatelessWidget {
+  const Page2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: BottomTabBarScreen(),
+    );
+  }
+}
+
 class BottomTabBarScreen extends StatefulWidget {
   const BottomTabBarScreen({super.key});
 
