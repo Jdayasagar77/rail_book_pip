@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rail_book_pip/models/shared_preferences.dart';
 import 'package:rail_book_pip/screens/change_password.dart';
 import 'package:rail_book_pip/screens/edit_user.dart';
@@ -39,9 +40,9 @@ docRef.get().then(
       (DocumentSnapshot doc) {
         final data = doc.data() as Map<String, dynamic>;
         setState(() {
-              _data = data;
+                        _data = data;
+_isLoading = true;
         });
-    debugPrint(data['image']);
       },
       onError: (e) => print("Error getting document: $e"),
     ); 
@@ -60,8 +61,10 @@ docRef.get().then(
               SizedBox(
                   width: 100,
                   height: 100,
-                  child: Image.memory(base64Decode(_data['image']) 
-                  ),
+                  child: _isLoading ? Image.memory(base64Decode(_data['image'])) : LoadingAnimationWidget.staggeredDotsWave(
+      color: Colors.white,
+      size: 21,
+    ),
                   ),
               const SizedBox(
                 height: 15.0,

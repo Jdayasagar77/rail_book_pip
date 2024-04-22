@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
 import 'package:rail_book_pip/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,6 +30,17 @@ String? _base64String;
 late SharedPreferences prefs;
 final db = FirebaseFirestore.instance;
 
+ DateTime? _date;
+
+  String display() {
+    if (_date == null) {
+      return 'NONE';
+    } else {
+      return 'year:${_date!.year}\nmonth:${_date!.month}\nday:${_date!.day}';
+    }
+  }
+
+
   String email = "", password = "", firstname = "", lastname = "", mobile = "", dob = "";
   TextEditingController firstnamecontroller = new TextEditingController();
     TextEditingController lastnamecontroller = new TextEditingController();
@@ -39,12 +51,21 @@ final db = FirebaseFirestore.instance;
 
   final _formkey = GlobalKey<FormState>();
 
-
+onTapFunction({required BuildContext context}) async {
+  DateTime? pickedDate = await showDatePicker(
+    context: context,
+    lastDate: DateTime.now(),
+    firstDate: DateTime(2015),
+    initialDate: DateTime.now(),
+  );
+  if (pickedDate == null) return;
+  dobcontroller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+}
 
 
 
  registration() async {
-    if (firstnamecontroller.text!= "" && mailcontroller.text!=""&& mobilecontroller.text!=""&& lastnamecontroller.text!="") {
+    if (firstnamecontroller.text!= "" && mailcontroller.text!=""&& mobilecontroller.text!=""&& lastnamecontroller.text!="" && passwordcontroller.text!="" && dobcontroller.text!= "") {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
@@ -181,6 +202,10 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
+                                  readOnly: true,
+onTap: () {
+  onTapFunction(context: context);
+},
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please Enter Date of Birth';
@@ -195,6 +220,8 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                                   color: Color(0xFFb2b7bf), fontSize: 12.0)),
                         ),
                       ),
+
+                      
                        const SizedBox(
                         height: 15.0,
                       ),
@@ -273,6 +300,7 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                       GestureDetector(
                         onTap: (){
                           if(_formkey.currentState!.validate()){
+                           
                             setState(() {
                               debugPrint('Sign Up');
                               email = mailcontroller.text;

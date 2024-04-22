@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:rail_book_pip/models/shared_preferences.dart';
 
 class EditUserDetailsPage extends StatefulWidget {
@@ -15,6 +16,17 @@ class _EditUserDetailsPageState extends State<EditUserDetailsPage> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _mobileController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
+
+onTapFunction({required BuildContext context}) async {
+  DateTime? pickedDate = await showDatePicker(
+    context: context,
+    lastDate: DateTime.now(),
+    firstDate: DateTime(2015),
+    initialDate: DateTime.now(),
+  );
+  if (pickedDate == null) return;
+  _dobController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+}
 
   @override
   void initState() {
@@ -62,15 +74,35 @@ class _EditUserDetailsPageState extends State<EditUserDetailsPage> {
                     }
                     return null;
                   }),
-              TextFormField(
-                  controller: _dobController,
-                  decoration: const InputDecoration(labelText: 'Date of Birth'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'DoB is required';
-                    }
-                    return null;
-                  }),
+                                const SizedBox(height: 20.0),
+
+            Container(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFedf0f8),
+                            borderRadius: BorderRadius.circular(30)),
+                        child: TextFormField(
+                          
+                                  readOnly: true,
+onTap: () {
+  onTapFunction(context: context);
+},
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Date of Birth';
+                            }
+                            return null;
+                          },
+                          controller: _dobController,
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Date of Birth",
+                              hintStyle: TextStyle(
+                                  color: Color(0xFFb2b7bf), fontSize: 12.0)),
+                        ),
+                      ),
+
               TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
@@ -122,7 +154,7 @@ class _EditUserDetailsPageState extends State<EditUserDetailsPage> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                                 content:
-                                    Text('User details updated successfully')),
+                                    Text('User details updated successfully. Please ensure to verify before continuing ')),
                           );
                         }).catchError((error) {
                           ScaffoldMessenger.of(context).showSnackBar(

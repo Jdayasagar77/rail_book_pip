@@ -9,7 +9,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var status = prefs.getBool('isLoggedIn') ?? false;
   await Firebase.initializeApp();
-  runApp(status == true ? const Page1() : const Page2() );
+  runApp(status == true ? const Page2() : const Page1() );
 
 // Ideal time to initialize
 //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);

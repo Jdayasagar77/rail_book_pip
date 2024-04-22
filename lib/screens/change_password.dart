@@ -14,7 +14,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   TextEditingController _currentPasswordController = TextEditingController();
   TextEditingController _newPasswordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
-  late SharedPreferences prefs;
 
   @override
   Widget build(BuildContext context) {
