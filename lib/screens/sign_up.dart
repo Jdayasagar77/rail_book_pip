@@ -127,8 +127,22 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                   'No image selected.',
                   textAlign: TextAlign.center,
                 )
-                : Image.file(File(_image!.path)),
+                : Container(
+  width: 120,
+  height: 120,
+  clipBehavior: Clip.antiAlias,
+  decoration: const BoxDecoration(
+    shape: BoxShape.circle,
+  ),
+  child: 
+  Image.file(
+    File(_image!.path),
+    fit: BoxFit.cover,
+    )
+),
                 ),
+
+
               const SizedBox(
                 height: 10.0,
               ),

@@ -17,146 +17,181 @@ class MyAccountTab extends StatefulWidget {
 }
 
 class _MyAccountTabState extends State<MyAccountTab> {
-  
-
 // Initialize shared preferences
 
- bool _isLoading=false; //bool variable created
+  bool _isLoading = false; //bool variable created
 
-void logoutUser() async {
-SharedPreferences prefs = await SharedPreferences.getInstance();
-prefs.clear();
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const LogIn()));
-}
-   @override
+  void logoutUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const LogIn()));
+  }
+
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-   
+
     SharedPref.getString("userUID").then((value) {
       debugPrint(value);
-  final docRef = FirebaseFirestore.instance.collection("Users").doc(value);
-docRef.get().then(
-      (DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        setState(() {
-                        _data = data;
-_isLoading = true;
-        });
-      },
-      onError: (e) => print("Error getting document: $e"),
-    ); 
-    } );
+      final docRef = FirebaseFirestore.instance.collection("Users").doc(value);
+      docRef.get().then(
+        (DocumentSnapshot doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          setState(() {
+            _data = data;
+            _isLoading = true;
+          });
+        },
+        onError: (e) => print("Error getting document: $e"),
+      );
+    });
   }
+
   var _data;
 
   @override
   Widget build(BuildContext context) {
-    return  Center(
-      child: Column(
-        children: [
-                 const SizedBox(
-                height: 100.0,
-              ),
-              SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: _isLoading ? Image.memory(base64Decode(_data['image'])) : LoadingAnimationWidget.staggeredDotsWave(
-      color: Colors.white,
-      size: 21,
-    ),
-                  ),
-              const SizedBox(
-                height: 15.0,
-              ),
-               SizedBox(
-                  width: 100,
-                  height: 20,
-                  child: Text("${_data['firstname']}"),
-                  ),
-              const SizedBox(
-                height: 15.0,
-              ),
-               SizedBox(
-                  width: 100,
-                  height: 20,
-                  child: Text("${_data['email']}"),
-                  ),
-              const SizedBox(
-                height: 25.0,
-              ),
-              GestureDetector(
-                        onTap: (){
-                        Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => EditUserDetailsPage()));
-                        },
-                        child: Container(
-                            width: MediaQuery.of(context).size.width/2,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5.0, horizontal: 10.0),
-                            decoration: BoxDecoration(
-                                color: const Color(0xFF273671),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: const Center(
-                                child: Text(
-                              "My Profile",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22.0,
-                                  fontWeight: FontWeight.w500),
-                            ))),
+    return Center(
+        child: Column(children: [
+      const SizedBox(
+        height: 100.0,
+      ),
+      Container(
+        width: 350,
+        height: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: const Color.fromARGB(255, 2, 2, 2), // Change the background color as needed
+        ),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: 120,
+                height: 120,
+                clipBehavior: Clip.antiAlias,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                ),
+                child: _isLoading
+                    ? Image.memory(
+                        base64Decode(_data['image']),
+                        fit: BoxFit.cover,
+                      )
+                    : LoadingAnimationWidget.staggeredDotsWave(
+                        color: Colors.white,
+                        size: 21,
                       ),
-                        const SizedBox(
-                height: 15.0,
               ),
-              GestureDetector(
-                        onTap: (){
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => ChangePasswordPage()));
-                        },
-                        child: Container(
-                            width: MediaQuery.of(context).size.width/2,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5.0, horizontal: 10.0),
-                            decoration: BoxDecoration(
-                                color: const Color(0xFF273671),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: const Center(
-                                child: Text(
-                              "Change Password",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            ),
-                            ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: Text(
+                      "${_data['firstname']}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 255, 255, 255),
                       ),
-                        const SizedBox(
-                height: 125.0,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      "${_data['email']}",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Color.fromARGB(255, 205, 255, 148),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              GestureDetector(
-                        onTap: (){
-                        logoutUser();
-                        },
-                        child: Container(
-                            width: MediaQuery.of(context).size.width/2,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5.0, horizontal: 10.0),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: const Center(
-                                child: Text(
-                              "Logout",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22.0,
-                                  fontWeight: FontWeight.w500),
-                            ))),
-                      ),
-        ]
-      )
-    );
+            ),
+          ],
+        ),
+      ),
+      const SizedBox(
+        height: 25.0,
+      ),
+      GestureDetector(
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => EditUserDetailsPage()));
+        },
+        child: Container(
+            width: MediaQuery.of(context).size.width / 2,
+            padding:
+                const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+            decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 0, 0, 0),
+                borderRadius: BorderRadius.circular(30)),
+            child: const Center(
+                child: Text(
+              "My Profile",
+              style: TextStyle(
+                  color: Colors.yellow,
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.w500),
+            ))),
+      ),
+      const SizedBox(
+        height: 15.0,
+      ),
+      GestureDetector(
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ChangePasswordPage()));
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width / 2,
+          padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+          decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 0, 0, 0),
+              borderRadius: BorderRadius.circular(30)),
+          child: const Center(
+            child: Text(
+              "Change Password",
+              style: TextStyle(
+                  color: Colors.yellow,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w500),
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(
+        height: 125.0,
+      ),
+      GestureDetector(
+        onTap: () {
+          logoutUser();
+        },
+        child: Container(
+            width: MediaQuery.of(context).size.width / 2,
+            padding:
+                const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+            decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 0, 0, 0),
+                borderRadius: BorderRadius.circular(30)),
+            child: const Center(
+                child: Text(
+              "Logout",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.w500),
+            ))),
+      ),
+    ]));
   }
 }
