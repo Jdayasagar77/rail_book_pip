@@ -93,7 +93,7 @@ class _MyAccountTabState extends State<MyAccountTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
                       "${_data['firstname']}",
                       style: const TextStyle(
@@ -105,7 +105,7 @@ class _MyAccountTabState extends State<MyAccountTab> {
                   ),
                   const SizedBox(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
                     child: Text(
                       "${_data['email']}",
                       style: const TextStyle(

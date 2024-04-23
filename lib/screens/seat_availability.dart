@@ -35,29 +35,33 @@ class _SeatAvailabilityScreenState extends State<SeatAvailabilityScreen> {
     final String apiUrl =
         'https://irctc1.p.rapidapi.com/api/v1/checkSeatAvailability';
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': '1de23605f5msh6e24f587c98de99p1692ccjsnec101976d820',
+      'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
     };
     String fromStationCode = seatAvailabilityParams.fromStationCode;
     String toStationCode = seatAvailabilityParams.toStationCode;
     String dateOfJourney = seatAvailabilityParams.date;
 
-    final Map<String, String> queryParams = {
+for (var element in seatAvailabilityParams.trainNo) {
+  
+ final Map<String, String> queryParams = {
       'classType': seatAvailabilityParams.classType,
       'fromStationCode': seatAvailabilityParams.fromStationCode,
       'quota': seatAvailabilityParams.quota,
       'toStationCode': seatAvailabilityParams.toStationCode,
-      'trainNo': seatAvailabilityParams.trainNo[0],
+      'trainNo': element,
       'date': seatAvailabilityParams.date,
     };
 
     final Uri uri = Uri.parse(apiUrl).replace(queryParameters: queryParams);
     final response = await http.get(uri, headers: headers);
 
-          final offlineResponse = await rootBundle.loadString('assets/json/seat_availability.json');
+    final offlineResponse = await rootBundle.loadString('assets/json/seat_availability.json');
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
+                        debugPrint('$responseData');
+
       if (responseData['status'] == true) {
         List<SeatAvailability> seats = responseData['data']
             .map<SeatAvailability>(
@@ -88,6 +92,11 @@ class _SeatAvailabilityScreenState extends State<SeatAvailabilityScreen> {
             _seats = seats;
         });
     }
+}
+
+
+   
+
 
 
   }

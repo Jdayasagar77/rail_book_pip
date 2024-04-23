@@ -16,6 +16,7 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
+
   TextEditingController _departurecontroller = TextEditingController();
 
   TextEditingController _fromstationController = TextEditingController();
@@ -30,6 +31,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   ]; // Example station names
 
   List<String> _trainNumbers = [];
+  List<String> _trainName = [];
 
   Future<void> searchTrains() async {
     String fromStationCode = selectedFrom;
@@ -46,18 +48,22 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     Uri uri = Uri.parse(url).replace(queryParameters: queryParams);
 
     Map<String, String> headers = {
-      'X-RapidAPI-Key': '1de23605f5msh6e24f587c98de99p1692ccjsnec101976d820',
+      'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
     };
 
     try {
       http.Response response = await http.get(uri, headers: headers);
+              final responseData = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
         // Handle the response data as needed
         List<String> trainNumbers =
             responseData['data'].map((train) => train["train_number"]).toList();
         _trainNumbers = trainNumbers;
+         List<String> trainName =
+            responseData['data'].map((train) => train["train_name"]).toList();
+        _trainName = trainName;
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
@@ -69,7 +75,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   Future<void> searchStations(String query) async {
     final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': '1de23605f5msh6e24f587c98de99p1692ccjsnec101976d820',
+      'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
     };
 
@@ -117,7 +123,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 138, 129, 129),
       appBar: AppBar(
         title: const Text('IRCTC Search'),
         leading: null,
@@ -153,9 +159,15 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                 return null;
               },
               controller: _fromstationController,
+
+              cursorColor: Colors.yellow,
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.navigate_before_rounded),
                 labelText: 'From',
+              
+                labelStyle: TextStyle(
+color: Colors.yellow,
+                ),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -181,6 +193,9 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
               },
               controller: _tostationController,
               decoration: const InputDecoration(
+                 labelStyle: TextStyle(
+color: Colors.yellow,
+                ),
                                 prefixIcon: Icon(Icons.location_on),
                 labelText: 'To',
                 border: OutlineInputBorder(),
@@ -190,7 +205,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             Column(
               children: [
                 const Text('Departure Date: ', style: TextStyle(
-                  color: Colors.green,
+                  color: Color.fromARGB(255, 0, 255, 8),
                 ),),
                 const SizedBox(
                   height: 12,
@@ -211,9 +226,10 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                                     prefixIcon: Icon(Icons.calendar_month),
 
                       border: OutlineInputBorder(),
+                      
                       hintText: "Departure Date",
                       hintStyle:
-                          TextStyle(color: Color(0xFFb2b7bf), fontSize: 12.0)),
+                          TextStyle(color: Colors.yellow, fontSize: 12.0)),
                 ),
               ],
             ),
@@ -221,7 +237,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             Row(
               children: [
                 const Text('Class: ', style: TextStyle(
-                                    color: Colors.green,
+                                    color: Color.fromARGB(255, 0, 255, 8),
 
                 ),),
                 const SizedBox(width: 12.0),
@@ -238,7 +254,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             Row(
               children: [
                 const Text('Quota: ', style: TextStyle(
-                                    color: Colors.green,
+                                    color: Color.fromARGB(255, 0, 255, 8),
 
                 ),),
                 const SizedBox(width: 12.0),
@@ -260,6 +276,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                     selectedTo.isNotEmpty &&
                     _departurecontroller.text.isNotEmpty) {
                   searchTrains();
+                  debugPrint('$_trainName');
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -270,7 +287,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                                     date: _departurecontroller.text,
                                     toStationCode: selectedTo,
                                     quota: selectedQuota,
-                                    trainNo: []), trainName: [],
+                                    trainNo: _trainNumbers), trainName: _trainName,
                               )));
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -294,6 +311,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       .map<String>((train) => train["train_name"].toString())
       .toList();
 debugPrint('$trainName');
+debugPrint('$trainNumbers');
 
    Navigator.push(
                       context,
@@ -335,6 +353,7 @@ debugPrint('$trainName');
                 onTap: () {
                   setState(() {
                     selectedFrom = station.code;
+                    _fromstationController.text = station.name;
                     Navigator.pop(context);
                   });
                 },
@@ -363,6 +382,7 @@ debugPrint('$trainName');
                 onTap: () {
                   setState(() {
                     selectedTo = station.code;
+                    _tostationController.text = station.name;
                     Navigator.pop(context);
                   });
                 },

@@ -11,6 +11,7 @@ class Page2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       home: BottomTabBarScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
