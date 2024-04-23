@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rail_book_pip/models/station.dart';
 import 'package:http/http.dart' as http;
+import 'package:rail_book_pip/screens/seat_availability.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({Key? key}) : super(key: key);
@@ -23,7 +24,11 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
   TextEditingController _qoutaController = TextEditingController();
   List<Station> _stations = [];
-  List<String> stations = ['Station A', 'Station B', 'Station C']; // Example station names
+  List<String> stations = [
+    'Station A',
+    'Station B',
+    'Station C'
+  ]; // Example station names
 
   Future<void> searchStations(String query) async {
     final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
@@ -85,10 +90,10 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
           children: [
             TextFormField(
               onChanged: (value) {
-                                searchStations(value);
+                searchStations(value);
                 setState(() {
                   selectedFrom = value;
-                                  showFromStation();
+                  showFromStation();
                 });
               },
               controller: _fromstationController,
@@ -100,10 +105,10 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             const SizedBox(height: 12.0),
             TextFormField(
               onChanged: (value) {
-                               searchStations(value);
+                searchStations(value);
                 setState(() {
                   selectedFrom = value;
-                                  showToStation();
+                  showToStation();
                 });
               },
               controller: _tostationController,
@@ -112,8 +117,6 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                 border: OutlineInputBorder(),
               ),
             ),
-
-
             const SizedBox(height: 12.0),
             Column(
               children: [
@@ -172,12 +175,17 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             const SizedBox(height: 12.0),
             ElevatedButton(
               onPressed: () {
+Navigator.push(context,
+              MaterialPageRoute(builder: (context) => SeatAvailabilityScreen()));
+
+                /*
                 // Perform search operation
                 print('Searching...');
                 print('From: $selectedFrom');
                 print('To: $selectedTo');
                 print('Class: $selectedClass');
                 print('Quota: $selectedQuota');
+                */
               },
               child: const Text('Search'),
             ),
@@ -187,8 +195,6 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     );
   }
 
-
-
   void showFromStation() {
     showModalBottomSheet(
       context: context,
@@ -196,22 +202,22 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
         return Container(
           height: MediaQuery.of(context).copyWith().size.height / 3,
           child: ListView.builder(
-                itemCount: _stations.length,
-                itemBuilder: (context, index) {
-                  final station = _stations[index];
-                  return ListTile(
-                    title: Text(station.name),
-                    subtitle: Text(station.stateName),
-                    trailing: Text(station.code),
-                    onTap: () {
+            itemCount: _stations.length,
+            itemBuilder: (context, index) {
+              final station = _stations[index];
+              return ListTile(
+                title: Text(station.name),
+                subtitle: Text(station.stateName),
+                trailing: Text(station.code),
+                onTap: () {
                   setState(() {
                     _fromstationController.text = station.name;
-                                      Navigator.pop(context);
+                    Navigator.pop(context);
                   });
                 },
-                  );
-                },
-              ),
+              );
+            },
+          ),
         );
       },
     );
@@ -224,29 +230,26 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
         return Container(
           height: MediaQuery.of(context).copyWith().size.height / 3,
           child: ListView.builder(
-                itemCount: stations.length,
-                itemBuilder: (context, index) {
-                  final station = stations[index];
-                  return ListTile(
-                    title: Text(station),
-                    // subtitle: Text(station.stateName),
-                    // trailing: Text(station.code),
-                    onTap: () {
+            itemCount: stations.length,
+            itemBuilder: (context, index) {
+              final station = stations[index];
+              return ListTile(
+                title: Text(station),
+                // subtitle: Text(station.stateName),
+                // trailing: Text(station.code),
+                onTap: () {
                   setState(() {
                     _tostationController.text = station;
-                                      Navigator.pop(context);
+                    Navigator.pop(context);
                   });
                 },
-                  );
-                },
-              ),
+              );
+            },
+          ),
         );
       },
     );
   }
-
-
-
 
   void showClassPicker() {
     showModalBottomSheet(
