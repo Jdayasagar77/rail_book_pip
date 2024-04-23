@@ -228,6 +228,8 @@ onTap: () {
                           },
                           controller: dobcontroller,
                           decoration: const InputDecoration(
+                                                                prefixIcon: Icon(Icons.calendar_month),
+
                               border: InputBorder.none,
                               hintText: "Date of Birth",
                               hintStyle: TextStyle(

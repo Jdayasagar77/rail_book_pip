@@ -117,16 +117,21 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: const Text('IRCTC Search'),
         leading: null,
+                automaticallyImplyLeading: false,
+
       ),
       body: Padding(
+        
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
+              
               onChanged: (value) {
                 setState(() {
                   searchStations(value);
@@ -149,6 +154,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
               },
               controller: _fromstationController,
               decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.navigate_before_rounded),
                 labelText: 'From',
                 border: OutlineInputBorder(),
               ),
@@ -175,6 +181,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
               },
               controller: _tostationController,
               decoration: const InputDecoration(
+                                prefixIcon: Icon(Icons.location_on),
                 labelText: 'To',
                 border: OutlineInputBorder(),
               ),
@@ -182,7 +189,9 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             const SizedBox(height: 12.0),
             Column(
               children: [
-                const Text('Departure Date: '),
+                const Text('Departure Date: ', style: TextStyle(
+                  color: Colors.green,
+                ),),
                 const SizedBox(
                   height: 12,
                 ),
@@ -199,6 +208,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                   },
                   controller: _departurecontroller,
                   decoration: const InputDecoration(
+                                    prefixIcon: Icon(Icons.calendar_month),
+
                       border: OutlineInputBorder(),
                       hintText: "Departure Date",
                       hintStyle:
@@ -209,7 +220,10 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             const SizedBox(height: 12.0),
             Row(
               children: [
-                const Text('Class: '),
+                const Text('Class: ', style: TextStyle(
+                                    color: Colors.green,
+
+                ),),
                 const SizedBox(width: 12.0),
                 ElevatedButton(
                   onPressed: () {
@@ -223,7 +237,10 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             const SizedBox(height: 12.0),
             Row(
               children: [
-                const Text('Quota: '),
+                const Text('Quota: ', style: TextStyle(
+                                    color: Colors.green,
+
+                ),),
                 const SizedBox(width: 12.0),
                 ElevatedButton(
                   onPressed: () {
