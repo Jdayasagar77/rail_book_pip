@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:rail_book_pip/models/seatavailable.dart';
 import 'package:rail_book_pip/models/station.dart';
 import 'package:http/http.dart' as http;
 import 'package:rail_book_pip/screens/seat_availability.dart';
@@ -20,9 +22,6 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
   TextEditingController _tostationController = TextEditingController();
 
-  TextEditingController _classcontroller = TextEditingController();
-
-  TextEditingController _qoutaController = TextEditingController();
   List<Station> _stations = [];
   List<String> stations = [
     'Station A',
@@ -30,10 +29,47 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     'Station C'
   ]; // Example station names
 
+  List<String> _trainNumbers = [];
+
+  Future<void> searchTrains() async {
+    String fromStationCode = selectedFrom;
+    String toStationCode = selectedTo;
+    String dateOfJourney = _departurecontroller.text;
+
+    String url = 'https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations';
+    Map<String, String> queryParams = {
+      'fromStationCode': fromStationCode,
+      'toStationCode': toStationCode,
+      'dateOfJourney': dateOfJourney,
+    };
+
+    Uri uri = Uri.parse(url).replace(queryParameters: queryParams);
+
+    Map<String, String> headers = {
+      'X-RapidAPI-Key': '1de23605f5msh6e24f587c98de99p1692ccjsnec101976d820',
+      'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
+    };
+
+    try {
+      http.Response response = await http.get(uri, headers: headers);
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        // Handle the response data as needed
+        List<String> trainNumbers =
+            responseData['data'].map((train) => train["train_number"]).toList();
+        _trainNumbers = trainNumbers;
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
   Future<void> searchStations(String query) async {
     final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': 'fdfaa3f240msha4a25388edb9d58p1da62djsn825aa66b0040',
+      'X-RapidAPI-Key': '1de23605f5msh6e24f587c98de99p1692ccjsnec101976d820',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
     };
 
@@ -50,6 +86,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
         });
       } else {
         // Handle error message from the API
+
         debugPrint('Error: ${responseData['message']}');
       }
     } else {
@@ -82,6 +119,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: const Text('IRCTC Search'),
+        leading: null,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -90,11 +128,24 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
           children: [
             TextFormField(
               onChanged: (value) {
-                searchStations(value);
                 setState(() {
-                  selectedFrom = value;
-                  showFromStation();
+                  searchStations(value);
                 });
+                if (_stations.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content:
+                            Text('Unable to fetch data due a network error')),
+                  );
+                } else {
+                  showFromStation();
+                }
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please Enter Station';
+                }
+                return null;
               },
               controller: _fromstationController,
               decoration: const InputDecoration(
@@ -105,11 +156,22 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             const SizedBox(height: 12.0),
             TextFormField(
               onChanged: (value) {
-                searchStations(value);
-                setState(() {
-                  selectedFrom = value;
+                if (_stations.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        duration: Duration(seconds: 5),
+                        content:
+                            Text('Unable to fetch data due a network error')),
+                  );
+                } else {
                   showToStation();
-                });
+                }
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please Enter Station';
+                }
+                return null;
               },
               controller: _tostationController,
               decoration: const InputDecoration(
@@ -174,20 +236,64 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
             ),
             const SizedBox(height: 12.0),
             ElevatedButton(
-              onPressed: () {
-Navigator.push(context,
-              MaterialPageRoute(builder: (context) => SeatAvailabilityScreen()));
-
-                /*
-                // Perform search operation
-                print('Searching...');
-                print('From: $selectedFrom');
-                print('To: $selectedTo');
-                print('Class: $selectedClass');
-                print('Quota: $selectedQuota');
-                */
+              onPressed: () async {
+                if (selectedClass.isNotEmpty &&
+                    selectedFrom.isNotEmpty &&
+                    selectedQuota.isNotEmpty &&
+                    selectedTo.isNotEmpty &&
+                    _departurecontroller.text.isNotEmpty) {
+                  searchTrains();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SeatAvailabilityScreen(
+                                seatAvailabilityParams: SeatAvailabilityParams(
+                                    classType: selectedClass,
+                                    fromStationCode: selectedFrom,
+                                    date: _departurecontroller.text,
+                                    toStationCode: selectedTo,
+                                    quota: selectedQuota,
+                                    trainNo: []), trainName: [],
+                              )));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Please fill all fields Properly')),
+                  );
+                }
               },
               child: const Text('Search'),
+            ),
+             const SizedBox(height: 12.0),
+            ElevatedButton(
+              onPressed: () async {
+            final offlineTo = 'BVI';
+                        final offlineFrom = 'ST';
+    final String response = await rootBundle.loadString('assets/json/train.json');
+  List<String> trainNumbers = jsonDecode(response)["data"]
+      .map<String>((train) => train["train_number"].toString())
+      .toList();
+        List<String> trainName = jsonDecode(response)["data"]
+      .map<String>((train) => train["train_name"].toString())
+      .toList();
+debugPrint('$trainName');
+
+   Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SeatAvailabilityScreen(
+                                seatAvailabilityParams: SeatAvailabilityParams(
+                                    classType: selectedClass,
+                                    fromStationCode: offlineFrom,
+                                    date: _departurecontroller.text,
+                                    toStationCode: offlineTo,
+                                    quota: selectedQuota,
+                                    trainNo: trainNumbers), trainName: trainName,
+                              )));
+
+              
+              },
+              child: const Text('Search on Offline Data'),
             ),
           ],
         ),
@@ -211,7 +317,7 @@ Navigator.push(context,
                 trailing: Text(station.code),
                 onTap: () {
                   setState(() {
-                    _fromstationController.text = station.name;
+                    selectedFrom = station.code;
                     Navigator.pop(context);
                   });
                 },
@@ -230,16 +336,16 @@ Navigator.push(context,
         return Container(
           height: MediaQuery.of(context).copyWith().size.height / 3,
           child: ListView.builder(
-            itemCount: stations.length,
+            itemCount: _stations.length,
             itemBuilder: (context, index) {
-              final station = stations[index];
+              final station = _stations[index];
               return ListTile(
-                title: Text(station),
-                // subtitle: Text(station.stateName),
-                // trailing: Text(station.code),
+                title: Text(station.name),
+                subtitle: Text(station.stateName),
+                trailing: Text(station.code),
                 onTap: () {
                   setState(() {
-                    _tostationController.text = station;
+                    selectedTo = station.code;
                     Navigator.pop(context);
                   });
                 },

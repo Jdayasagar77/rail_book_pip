@@ -49,6 +49,7 @@ dependencies:
   loading_animation_widget: ^1.2.1
   image_cropper: ^5.0.1
   http: ^1.2.1
+  google_fonts: ^6.2.1
   
 
 dev_dependencies:
@@ -79,6 +80,8 @@ flutter:
     - assets/images/google.png
     - assets/images/apple.png
     - assets/images/train2.jpg
+    - assets/json/train.json
+    - assets/json/seat_availability.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

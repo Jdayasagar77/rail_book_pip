@@ -1,0 +1,65 @@
+{
+"data" :[
+    {
+      "ticket_fare": 710,
+      "catering_charge": 0,
+      "alt_cnf_seat": null,
+      "total_fare": 710,
+      "date": "24-4-2024",
+      "confirm_probability_percent": "93",
+      "confirm_probability": "High",
+      "current_status": "RLWL4/WL4."
+    },
+    {
+      "ticket_fare": 710,
+      "catering_charge": 0,
+      "alt_cnf_seat": null,
+      "total_fare": 710,
+      "date": "25-4-2024",
+      "confirm_probability_percent": "93",
+      "confirm_probability": "High",
+      "current_status": "RLWL3/WL3."
+    },
+    {
+      "ticket_fare": 710,
+      "catering_charge": 0,
+      "alt_cnf_seat": null,
+      "total_fare": 710,
+      "date": "26-4-2024",
+      "confirm_probability_percent": "86",
+      "confirm_probability": "High",
+      "current_status": "RLWL15/WL9."
+    },
+    {
+      "ticket_fare": 710,
+      "catering_charge": 0,
+      "alt_cnf_seat": null,
+      "total_fare": 710,
+      "date": "27-4-2024",
+      "confirm_probability_percent": "94",
+      "confirm_probability": "High",
+      "current_status": "RLWL1/WL1."
+    },
+    {
+      "ticket_fare": 710,
+      "catering_charge": 0,
+      "alt_cnf_seat": null,
+      "total_fare": 710,
+      "date": "28-4-2024",
+      "confirm_probability_percent": "86",
+      "confirm_probability": "High",
+      "current_status": "RLWL14/WL13."
+    },
+    {
+      "ticket_fare": 710,
+      "catering_charge": 0,
+      "alt_cnf_seat": null,
+      "total_fare": 710,
+      "date": "29-4-2024",
+      "confirm_probability_percent": "94",
+      "confirm_probability": "High",
+      "current_status": "RLWL2/WL1."
+    }
+  ]
+
+}
