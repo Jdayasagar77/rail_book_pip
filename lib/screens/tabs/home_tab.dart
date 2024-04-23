@@ -16,19 +16,14 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
-
   TextEditingController _departurecontroller = TextEditingController();
 
   TextEditingController _fromstationController = TextEditingController();
 
   TextEditingController _tostationController = TextEditingController();
 
-  List<Station> _stations = [];
-  List<String> stations = [
-    'Station A',
-    'Station B',
-    'Station C'
-  ]; // Example station names
+  List<Station> _stationsFrom = [];
+  List<Station> _stationsTo = [ ]; // Example station names
 
   List<String> _trainNumbers = [];
   List<String> _trainName = [];
@@ -48,20 +43,20 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     Uri uri = Uri.parse(url).replace(queryParameters: queryParams);
 
     Map<String, String> headers = {
-      'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
+      'X-RapidAPI-Key': 'a9c5f69a29mshfcf7a5c5c1888b7p111ae8jsn92e54ecc4ee3',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
     };
 
     try {
       http.Response response = await http.get(uri, headers: headers);
-              final responseData = jsonDecode(response.body);
+      final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         // Handle the response data as needed
         List<String> trainNumbers =
             responseData['data'].map((train) => train["train_number"]).toList();
         _trainNumbers = trainNumbers;
-         List<String> trainName =
+        List<String> trainName =
             responseData['data'].map((train) => train["train_name"]).toList();
         _trainName = trainName;
       } else {
@@ -72,10 +67,10 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     }
   }
 
-  Future<void> searchStations(String query) async {
+  Future<void> searchFromStations(String query) async {
     final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
+      'X-RapidAPI-Key': 'a9c5f69a29mshfcf7a5c5c1888b7p111ae8jsn92e54ecc4ee3',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
     };
 
@@ -85,14 +80,65 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
+              debugPrint('$responseData');
+
       if (responseData['status'] == true) {
         setState(() {
-          _stations = List<Station>.from(responseData['data']
+          _stationsFrom = List<Station>.from(responseData['data']
               .map((stationData) => Station.fromJson(stationData)));
+
         });
+                                                                showFromStation();
+
       } else {
         // Handle error message from the API
+                  ScaffoldMessenger.of(context).showSnackBar(
+                     SnackBar(
+                        duration: Duration(seconds: 5),
+                        content:
+                            Text('Error: ${responseData['message']}')),
+                  );
+             
+        debugPrint('Error: ${responseData['message']}');
+      }
+    } else {
+      // Handle HTTP error
+      debugPrint('HTTP Error: ${response.statusCode}');
+    }
+  }
 
+  Future<void> searchToStations(String query) async {
+    final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
+    final Map<String, String> headers = {
+      'X-RapidAPI-Key': 'a9c5f69a29mshfcf7a5c5c1888b7p111ae8jsn92e54ecc4ee3',
+      'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
+    };
+
+    final Uri uri = Uri.parse(apiUrl);
+    final response = await http
+        .get(uri.replace(queryParameters: {'query': query}), headers: headers);
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+              debugPrint('$responseData');
+
+      if (responseData['status'] == true) {
+        setState(() {
+          _stationsTo = List<Station>.from(responseData['data']
+              .map((stationData) => Station.fromJson(stationData)));
+
+        });
+                                                                         showToStation();
+
+      } else {
+        // Handle error message from the API
+                  ScaffoldMessenger.of(context).showSnackBar(
+                     SnackBar(
+                        duration: Duration(seconds: 5),
+                        content:
+                            Text('Error: ${responseData['message']}')),
+                  );
+             
         debugPrint('Error: ${responseData['message']}');
       }
     } else {
@@ -109,8 +155,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   onTapFunction({required BuildContext context}) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
-      lastDate: DateTime.now(),
-      firstDate: DateTime(2015),
+      lastDate: DateTime.parse("2032-02-27"),
+      firstDate: DateTime.now(),
       initialDate: DateTime.now(),
     );
     if (pickedDate == null) return;
@@ -127,30 +173,16 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       appBar: AppBar(
         title: const Text('IRCTC Search'),
         leading: null,
-                automaticallyImplyLeading: false,
-
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
-        
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
-              
               onChanged: (value) {
-                setState(() {
-                  searchStations(value);
-                });
-                if (_stations.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content:
-                            Text('Unable to fetch data due a network error')),
-                  );
-                } else {
-                  showFromStation();
-                }
+                  searchFromStations(value);
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -158,15 +190,17 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                 }
                 return null;
               },
+                            onTapOutside: (event) {
+                _fromstationController.text = "";
+              },
+              
               controller: _fromstationController,
-
               cursorColor: Colors.yellow,
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.navigate_before_rounded),
                 labelText: 'From',
-              
                 labelStyle: TextStyle(
-color: Colors.yellow,
+                  color: Colors.yellow,
                 ),
                 border: OutlineInputBorder(),
               ),
@@ -174,29 +208,26 @@ color: Colors.yellow,
             const SizedBox(height: 12.0),
             TextFormField(
               onChanged: (value) {
-                if (_stations.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        duration: Duration(seconds: 5),
-                        content:
-                            Text('Unable to fetch data due a network error')),
-                  );
-                } else {
-                  showToStation();
-                }
+                      searchToStations(value);
+
+                                    
               },
+
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please Enter Station';
                 }
                 return null;
               },
+              onTapOutside: (event) {
+                _tostationController.text = "";
+              },
               controller: _tostationController,
               decoration: const InputDecoration(
-                 labelStyle: TextStyle(
-color: Colors.yellow,
+                labelStyle: TextStyle(
+                  color: Colors.yellow,
                 ),
-                                prefixIcon: Icon(Icons.location_on),
+                prefixIcon: Icon(Icons.location_on),
                 labelText: 'To',
                 border: OutlineInputBorder(),
               ),
@@ -204,9 +235,12 @@ color: Colors.yellow,
             const SizedBox(height: 12.0),
             Column(
               children: [
-                const Text('Departure Date: ', style: TextStyle(
-                  color: Color.fromARGB(255, 0, 255, 8),
-                ),),
+                const Text(
+                  'Departure Date: ',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 0, 255, 8),
+                  ),
+                ),
                 const SizedBox(
                   height: 12,
                 ),
@@ -223,10 +257,8 @@ color: Colors.yellow,
                   },
                   controller: _departurecontroller,
                   decoration: const InputDecoration(
-                                    prefixIcon: Icon(Icons.calendar_month),
-
+                      prefixIcon: Icon(Icons.calendar_month),
                       border: OutlineInputBorder(),
-                      
                       hintText: "Departure Date",
                       hintStyle:
                           TextStyle(color: Colors.yellow, fontSize: 12.0)),
@@ -236,10 +268,12 @@ color: Colors.yellow,
             const SizedBox(height: 12.0),
             Row(
               children: [
-                const Text('Class: ', style: TextStyle(
-                                    color: Color.fromARGB(255, 0, 255, 8),
-
-                ),),
+                const Text(
+                  'Class: ',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 0, 255, 8),
+                  ),
+                ),
                 const SizedBox(width: 12.0),
                 ElevatedButton(
                   onPressed: () {
@@ -253,10 +287,12 @@ color: Colors.yellow,
             const SizedBox(height: 12.0),
             Row(
               children: [
-                const Text('Quota: ', style: TextStyle(
-                                    color: Color.fromARGB(255, 0, 255, 8),
-
-                ),),
+                const Text(
+                  'Quota: ',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 0, 255, 8),
+                  ),
+                ),
                 const SizedBox(width: 12.0),
                 ElevatedButton(
                   onPressed: () {
@@ -287,7 +323,8 @@ color: Colors.yellow,
                                     date: _departurecontroller.text,
                                     toStationCode: selectedTo,
                                     quota: selectedQuota,
-                                    trainNo: _trainNumbers), trainName: _trainName,
+                                    trainNo: _trainNumbers),
+                                trainName: _trainName,
                               )));
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -298,35 +335,35 @@ color: Colors.yellow,
               },
               child: const Text('Search'),
             ),
-             const SizedBox(height: 12.0),
+            const SizedBox(height: 12.0),
             ElevatedButton(
               onPressed: () async {
-            final offlineTo = 'BVI';
-                        final offlineFrom = 'ST';
-    final String response = await rootBundle.loadString('assets/json/train.json');
-  List<String> trainNumbers = jsonDecode(response)["data"]
-      .map<String>((train) => train["train_number"].toString())
-      .toList();
-        List<String> trainName = jsonDecode(response)["data"]
-      .map<String>((train) => train["train_name"].toString())
-      .toList();
-debugPrint('$trainName');
-debugPrint('$trainNumbers');
+                final offlineTo = 'BVI';
+                final offlineFrom = 'ST';
+                final String response =
+                    await rootBundle.loadString('assets/json/train.json');
+                List<String> trainNumbers = jsonDecode(response)["data"]
+                    .map<String>((train) => train["train_number"].toString())
+                    .toList();
+                List<String> trainName = jsonDecode(response)["data"]
+                    .map<String>((train) => train["train_name"].toString())
+                    .toList();
+                debugPrint('$trainName');
+                debugPrint('$trainNumbers');
 
-   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SeatAvailabilityScreen(
-                                seatAvailabilityParams: SeatAvailabilityParams(
-                                    classType: selectedClass,
-                                    fromStationCode: offlineFrom,
-                                    date: _departurecontroller.text,
-                                    toStationCode: offlineTo,
-                                    quota: selectedQuota,
-                                    trainNo: trainNumbers), trainName: trainName,
-                              )));
-
-              
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SeatAvailabilityScreen(
+                              seatAvailabilityParams: SeatAvailabilityParams(
+                                  classType: selectedClass,
+                                  fromStationCode: offlineFrom,
+                                  date: _departurecontroller.text,
+                                  toStationCode: offlineTo,
+                                  quota: selectedQuota,
+                                  trainNo: trainNumbers),
+                              trainName: trainName,
+                            )));
               },
               child: const Text('Search on Offline Data'),
             ),
@@ -343,9 +380,9 @@ debugPrint('$trainNumbers');
         return Container(
           height: MediaQuery.of(context).copyWith().size.height / 3,
           child: ListView.builder(
-            itemCount: _stations.length,
+            itemCount: _stationsFrom.length,
             itemBuilder: (context, index) {
-              final station = _stations[index];
+              final station = _stationsFrom[index];
               return ListTile(
                 title: Text(station.name),
                 subtitle: Text(station.stateName),
@@ -372,9 +409,9 @@ debugPrint('$trainNumbers');
         return Container(
           height: MediaQuery.of(context).copyWith().size.height / 3,
           child: ListView.builder(
-            itemCount: _stations.length,
+            itemCount: _stationsTo.length,
             itemBuilder: (context, index) {
-              final station = _stations[index];
+              final station = _stationsTo[index];
               return ListTile(
                 title: Text(station.name),
                 subtitle: Text(station.stateName),

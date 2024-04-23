@@ -20,8 +20,8 @@ class _EditUserDetailsPageState extends State<EditUserDetailsPage> {
 onTapFunction({required BuildContext context}) async {
   DateTime? pickedDate = await showDatePicker(
     context: context,
-    lastDate: DateTime.now(),
-    firstDate: DateTime(2015),
+  lastDate: DateTime.now(),
+    firstDate: DateTime(1900),
     initialDate: DateTime.now(),
   );
   if (pickedDate == null) return;

@@ -20,6 +20,7 @@ class _MyAccountTabState extends State<MyAccountTab> {
 // Initialize shared preferences
 
   bool _isLoading = false; //bool variable created
+  var _data;
 
   void logoutUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,7 +30,7 @@ class _MyAccountTabState extends State<MyAccountTab> {
   }
 
   @override
-  void initState() {
+  void initState(){
     // TODO: implement initState
     super.initState();
 
@@ -43,13 +44,13 @@ class _MyAccountTabState extends State<MyAccountTab> {
             _data = data;
             _isLoading = true;
           });
+            
         },
         onError: (e) => print("Error getting document: $e"),
       );
     });
   }
 
-  var _data;
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +82,7 @@ class _MyAccountTabState extends State<MyAccountTab> {
                         base64Decode(_data['image']),
                         fit: BoxFit.cover,
                       )
-                    : LoadingAnimationWidget.staggeredDotsWave(
-                        color: Colors.white,
-                        size: 21,
-                      ),
+                    : const CircularProgressIndicator()
               ),
             ),
             Expanded(
@@ -94,25 +92,39 @@ class _MyAccountTabState extends State<MyAccountTab> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Text(
+                    child: _isLoading ? Text(
                       "${_data['firstname']}",
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Color.fromARGB(255, 255, 255, 255),
                       ),
-                    ),
+                    ) : const Text(
+                      "Loading...",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 255, 255, 255),
+                      ),
+                    ) ,
                   ),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: Text(
+                    child: _isLoading ? Text(
                       "${_data['email']}",
                       style: const TextStyle(
                         fontSize: 16,
                         color: Color.fromARGB(255, 205, 255, 148),
                       ),
-                    ),
+                    ) : const Text(
+                      "Loading...",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 255, 255, 255),
+                      ),
+                    ) ,
                   ),
                 ],
               ),
