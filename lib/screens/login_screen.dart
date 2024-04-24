@@ -98,9 +98,15 @@ if (FirebaseAuth.instance.currentUser != null) {
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
                           validator: (value) {
+                                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
                             if (value == null || value.isEmpty) {
-                              return 'Please Enter E-mail';
-                            }
+                              return 'Please Enter Email';
+                            } else  if (!emailRegex.hasMatch(value)) {
+                                      return 'Please Enter a Valid Email address';
+
+      } 
+
                             return null;
                           },
                           controller: mailcontroller,

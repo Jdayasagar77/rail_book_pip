@@ -38,13 +38,12 @@ onTapFunction({required BuildContext context}) async {
       docRef.get().then(
         (DocumentSnapshot doc) {
           final data = doc.data() as Map<String, dynamic>;
-
           setState(() {
-            _nameController.text = data['name'];
+            _nameController.text = data['firstname'];
             _dobController.text = data['dob'];
             _emailController.text = data['email'];
             _mobileController.text = data['mobile'];
-            _addressController.text = data['address'];
+          //  _addressController.text = data['address'];
           });
         },
         onError: (e) => print("Error getting document: $e"),
@@ -107,30 +106,39 @@ onTap: () {
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please Enter Email';
-                    }
-                    return null;
-                  }),
+                                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Email';
+                            } else  if (!emailRegex.hasMatch(value)) {
+                                      return 'Please Enter a Valid Email address';
+
+      } 
+
+                            return null;
+                          },),
               TextFormField(
                   controller: _mobileController,
                   decoration: const InputDecoration(labelText: 'Mobile'),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null || value.isEmpty  ) {
                       return 'Please Enter Mobile';
                     }
-                    return null;
-                  }),
-              TextFormField(
-                  controller: _addressController,
-                  decoration: const InputDecoration(labelText: 'Address'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please Enter Address';
+                    else if (value.length >= 11 || value.length <= 9) {
+                      return 'Mobile Number should be 10 digits';
                     }
                     return null;
                   }),
-              const SizedBox(height: 20.0),
+              // TextFormField(
+              //     controller: _addressController,
+              //     decoration: const InputDecoration(labelText: 'Address'),
+              //     validator: (value) {
+              //       if (value == null || value.isEmpty) {
+              //         return 'Please Enter Address';
+              //       }
+              //       return null;
+              //     }),
+              // const SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -145,11 +153,11 @@ onTap: () {
                             .collection('Users')
                             .doc(value)
                             .update({
-                          'name': _nameController.text,
+                          'firstname': _nameController.text,
                           'dob': _dobController.text,
                           'email': _emailController.text,
                           'mobile': _mobileController.text,
-                          'address': _addressController.text,
+                          ///'address': _addressController.text,
                         }).then((value) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

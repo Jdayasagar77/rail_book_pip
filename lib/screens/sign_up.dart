@@ -32,6 +32,19 @@ final db = FirebaseFirestore.instance;
 
  DateTime? _date;
 
+ String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    // Define your password validation criteria here
+    // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
+    final passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+    if (!passwordRegex.hasMatch(value)) {
+      return 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters';
+    }
+    return null;
+  }
+
   String display() {
     if (_date == null) {
       return 'NONE';
@@ -249,9 +262,15 @@ onTap: () {
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
                           validator: (value) {
+                                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
                             if (value == null || value.isEmpty) {
                               return 'Please Enter Email';
-                            }
+                            } else  if (!emailRegex.hasMatch(value)) {
+                                      return 'Please Enter a Valid Email address';
+
+      } 
+
                             return null;
                           },
                           controller: mailcontroller,
@@ -273,11 +292,14 @@ onTap: () {
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please Enter Mobile Number';
-                            }
-                            return null;
-                          },
+                    if (value == null || value.isEmpty  ) {
+                      return 'Please Enter Mobile';
+                    }
+                    else if (value.length >= 11 || value.length <= 9) {
+                      return 'Mobile Number should be 10 digits';
+                    }
+                    return null;
+                  },
                           controller: mobilecontroller,
                           decoration: const InputDecoration(
                               border: InputBorder.none,
@@ -296,12 +318,7 @@ onTap: () {
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please Enter Password';
-                            }
-                            return null;
-                          },
+                          validator: _validatePassword,
                           controller: passwordcontroller,
                           decoration: const InputDecoration(
                               border: InputBorder.none,

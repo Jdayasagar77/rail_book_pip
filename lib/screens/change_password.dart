@@ -15,6 +15,19 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   TextEditingController _newPasswordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
 
+ String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    // Define your password validation criteria here
+    // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
+    final passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+    if (!passwordRegex.hasMatch(value)) {
+      return 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,38 +46,20 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 obscureText: true,
                 decoration:
                     const InputDecoration(labelText: 'Current Password'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Password is required';
-                  }
-                  return null;
-                },
+                validator: _validatePassword
               ),
               TextFormField(
                 controller: _newPasswordController,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'New Password'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Password is required';
-                  }
-                  return null;
-                },
+                validator: _validatePassword,
               ),
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: true,
                 decoration:
                     const InputDecoration(labelText: 'Confirm Password'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Confirm password is required';
-                  }
-                  if (value != _newPasswordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
+                validator: _validatePassword,
               ),
               const SizedBox(height: 20.0),
               ElevatedButton(
