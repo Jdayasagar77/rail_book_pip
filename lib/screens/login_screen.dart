@@ -7,7 +7,6 @@ import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
 import 'package:rail_book_pip/screens/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class Page1 extends StatelessWidget {
   const Page1({super.key});
 
@@ -45,11 +44,11 @@ late SharedPreferences prefs;
     // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
     final passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (!passwordRegex.hasMatch(value)) {
-       ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+       ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
             backgroundColor: Colors.orangeAccent,
             content: Text(
               'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
-              style: const TextStyle(fontSize: 18.0),
+              style: TextStyle(fontSize: 18.0),
             )));
      return 'Password must be at least 8 unique characters ';
     }
@@ -73,6 +72,8 @@ if (FirebaseAuth.instance.currentUser != null) {
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
     } on FirebaseAuthException catch (e) {
+        debugPrint('${e.message}');
+
       ScaffoldMessenger.of(context).showSnackBar( SnackBar(
             backgroundColor: Colors.orangeAccent,
             content: Text(
@@ -130,6 +131,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                           },
                           controller: mailcontroller,
                           decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.mail),
                               border: InputBorder.none,
                               hintText: "Email",
                               hintStyle: TextStyle(
@@ -149,6 +151,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                           controller: passwordcontroller,
                           validator: _validatePassword,
                           decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.lock),
                               border: InputBorder.none,
                               hintText: "Password",
                               hintStyle: TextStyle(
@@ -233,7 +236,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                       width: 25,
                       fit: BoxFit.cover,
                     ),
-                  )
+                  ),
                 ],
               ),
               const SizedBox(
@@ -253,7 +256,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                   GestureDetector(
                     onTap: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => SignUp()));
+                          MaterialPageRoute(builder: (context) => const SignUp()));
                     },
                     child: const Text(
                       "SignUp",

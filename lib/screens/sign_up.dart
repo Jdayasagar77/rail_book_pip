@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -20,33 +19,33 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final ImagePicker _picker = ImagePicker();
+  XFile? _image;
+  // Read bytes from the file object
 
-final ImagePicker _picker = ImagePicker();
-      XFile? _image;
-      // Read bytes from the file object
- 
 // base64 encode the bytes
-String? _base64String;
-late SharedPreferences prefs;
-final db = FirebaseFirestore.instance;
+  String? _base64String;
+  late SharedPreferences prefs;
+  final db = FirebaseFirestore.instance;
 
- DateTime? _date;
+  DateTime? _date;
 
- String? _validatePassword(String? value) {
+  String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
     // Define your password validation criteria here
     // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
-    final passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+    final passwordRegex =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (!passwordRegex.hasMatch(value)) {
-      ScaffoldMessenger.of(context).showSnackBar( SnackBar(
-            backgroundColor: Colors.orangeAccent,
-            content: Text(
-              'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
-              style: const TextStyle(fontSize: 18.0),
-            )));
-     return 'Password must be at least 8 unique characters ';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.orangeAccent,
+          content: Text(
+            'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
+            style: const TextStyle(fontSize: 18.0),
+          )));
+      return 'Password must be at least 8 unique characters ';
     }
     return null;
   }
@@ -59,64 +58,77 @@ final db = FirebaseFirestore.instance;
     }
   }
 
-
-  String email = "", password = "", firstname = "", lastname = "", mobile = "", dob = "";
+  String email = "",
+      password = "",
+      firstname = "",
+      lastname = "",
+      mobile = "",
+      dob = "";
   TextEditingController firstnamecontroller = new TextEditingController();
-    TextEditingController lastnamecontroller = new TextEditingController();
-        TextEditingController dobcontroller = new TextEditingController();
-      TextEditingController mobilecontroller = new TextEditingController();
+  TextEditingController lastnamecontroller = new TextEditingController();
+  TextEditingController dobcontroller = new TextEditingController();
+  TextEditingController mobilecontroller = new TextEditingController();
   TextEditingController passwordcontroller = new TextEditingController();
   TextEditingController mailcontroller = new TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
 
-onTapFunction({required BuildContext context}) async {
-  DateTime? pickedDate = await showDatePicker(
-    context: context,
-    lastDate: DateTime.now(),
-    firstDate: DateTime(1900),
-    initialDate: DateTime.now(),
-  );
-  if (pickedDate == null) return;
-  dobcontroller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
-}
+  onTapFunction({required BuildContext context}) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      lastDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      initialDate: DateTime.now(),
+    );
+    if (pickedDate == null) return;
+    dobcontroller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+  }
 
-
-
- registration() async {
-    if (firstnamecontroller.text!= "" && mailcontroller.text!=""&& mobilecontroller.text!=""&& lastnamecontroller.text!="" && passwordcontroller.text!="" && dobcontroller.text!= "") {
+  registration() async {
+    if (firstnamecontroller.text != "" &&
+        mailcontroller.text != "" &&
+        mobilecontroller.text != "" &&
+        lastnamecontroller.text != "" &&
+        passwordcontroller.text != "" &&
+        dobcontroller.text != "") {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
             content: Text(
-          "Registered Successfully",
-          style: TextStyle(fontSize: 20.0),
-        ),
-        ),
+              "Registered Successfully",
+              style: TextStyle(fontSize: 20.0),
+            ),
+          ),
         );
 
         final user = <String, String>{
-  "firstname": firstnamecontroller.text,
-  "lastname": lastnamecontroller.text,
-  "dob": dobcontroller.text,
-   "email": mailcontroller.text,
-  "mobile": mobilecontroller.text,
-  "password": passwordcontroller.text,
-  "image":_base64String ?? "",
-};
+          "firstname": firstnamecontroller.text,
+          "lastname": lastnamecontroller.text,
+          "dob": dobcontroller.text,
+          "email": mailcontroller.text,
+          "mobile": mobilecontroller.text,
+          "password": passwordcontroller.text,
+          "image": _base64String ?? "",
+        };
 
 // Add a new document with a generated ID
-db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge: true)); 
-                      prefs = await SharedPreferences.getInstance();
-                    
-                           prefs.setBool("isLoggedIn", true);     
-                             prefs.setString('userUID', userCredential.user!.uid);
-   // ignore: use_build_context_synchronously
+        db
+            .collection("Users")
+            .doc(userCredential.user?.uid)
+            .set(user, SetOptions(merge: true));
+        prefs = await SharedPreferences.getInstance();
+
+        prefs.setBool("isLoggedIn", true);
+        prefs.setString('userUID', userCredential.user!.uid);
+        // ignore: use_build_context_synchronously
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => const BottomTabBarScreen()));
       } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             backgroundColor: Colors.orangeAccent,
             content: Text(
               "${e.message}",
@@ -134,54 +146,49 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
         child: Center(
           child: Column(
             children: [
-               const SizedBox(
+              const SizedBox(
                 height: 100.0,
               ),
               SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                                  height: 100,
-          
-                  child: _image == null
-                ? const Text(
-                  'No image selected.',
-                  textAlign: TextAlign.center,
-                )
-                : Container(
-  width: 120,
-  height: 120,
-  clipBehavior: Clip.antiAlias,
-  decoration: const BoxDecoration(
-    shape: BoxShape.circle,
-  ),
-  child: 
-  Image.file(
-    File(_image!.path),
-    fit: BoxFit.cover,
-    )
-),
-                ),
-
-
+                width: MediaQuery.of(context).size.width,
+                height: 100,
+                child: _image == null
+                    ? const Text(
+                        'No image selected.',
+                        textAlign: TextAlign.center,
+                      )
+                    : Container(
+                        width: 120,
+                        height: 120,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        child: Image.file(
+                          File(_image!.path),
+                          fit: BoxFit.cover,
+                        )),
+              ),
               const SizedBox(
                 height: 10.0,
               ),
- FloatingActionButton(
-            onPressed: getImage,
-            tooltip: 'Pick Image',
-            child: const Icon(Icons.add_a_photo),
-          ),
-          const SizedBox(
+              FloatingActionButton(
+                onPressed: getImage,
+                tooltip: 'Pick Image',
+                child: const Icon(Icons.add_a_photo),
+              ),
+              const SizedBox(
                 height: 15.0,
               ),
-                        Padding(
+              Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: Form(
                   key: _formkey,
                   child: Column(
                     children: [
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 1.0, horizontal: 20.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
@@ -194,6 +201,8 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                           },
                           controller: firstnamecontroller,
                           decoration: const InputDecoration(
+                                      
+
                               border: InputBorder.none,
                               hintText: "First Name",
                               hintStyle: TextStyle(
@@ -203,9 +212,9 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                       const SizedBox(
                         height: 15.0,
                       ),
-                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 1.0, horizontal: 20.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
@@ -227,18 +236,17 @@ db.collection("Users").doc(userCredential.user?.uid).set(user, SetOptions(merge:
                       const SizedBox(
                         height: 15.0,
                       ),
-                   
-                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 1.0, horizontal: 20.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
-                                  readOnly: true,
-onTap: () {
-  onTapFunction(context: context);
-},
+                          readOnly: true,
+                          onTap: () {
+                            onTapFunction(context: context);
+                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please Enter Date of Birth';
@@ -247,40 +255,38 @@ onTap: () {
                           },
                           controller: dobcontroller,
                           decoration: const InputDecoration(
-                                                                prefixIcon: Icon(Icons.calendar_month),
-
+                              prefixIcon: Icon(Icons.calendar_month),
                               border: InputBorder.none,
                               hintText: "Date of Birth",
                               hintStyle: TextStyle(
                                   color: Color(0xFFb2b7bf), fontSize: 12.0)),
                         ),
                       ),
-
-                      
-                       const SizedBox(
+                      const SizedBox(
                         height: 15.0,
                       ),
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 1.0, horizontal: 20.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
                           validator: (value) {
-                                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                            final emailRegex =
+                                RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
                             if (value == null || value.isEmpty) {
                               return 'Please Enter Email';
-                            } else  if (!emailRegex.hasMatch(value)) {
-                                      return 'Please Enter a Valid Email address';
-
-      } 
+                            } else if (!emailRegex.hasMatch(value)) {
+                              return 'Please Enter a Valid Email address';
+                            }
 
                             return null;
                           },
                           controller: mailcontroller,
                           decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.mail),
                               border: InputBorder.none,
                               hintText: "Email",
                               hintStyle: TextStyle(
@@ -290,36 +296,37 @@ onTap: () {
                       const SizedBox(
                         height: 15.0,
                       ),
-                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 1.0, horizontal: 20.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
                           validator: (value) {
-                    if (value == null || value.isEmpty  ) {
-                      return 'Please Enter Mobile';
-                    }
-                    else if (value.length >= 11 || value.length <= 9) {
-                      return 'Mobile Number should be 10 digits';
-                    }
-                    return null;
-                  },
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Mobile';
+                            } else if (value.length >= 11 ||
+                                value.length <= 9) {
+                              return 'Mobile Number should be 10 digits';
+                            }
+                            return null;
+                          },
                           controller: mobilecontroller,
                           decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.phone),
                               border: InputBorder.none,
                               hintText: "Mobile",
                               hintStyle: TextStyle(
                                   color: Color(0xFFb2b7bf), fontSize: 12.0)),
                         ),
                       ),
-                       const SizedBox(
+                      const SizedBox(
                         height: 15.0,
                       ),
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 1.0, horizontal: 20.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 1.0, horizontal: 20.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
@@ -327,19 +334,20 @@ onTap: () {
                           validator: _validatePassword,
                           controller: passwordcontroller,
                           decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.lock),
                               border: InputBorder.none,
                               hintText: "Password",
                               hintStyle: TextStyle(
                                   color: Color(0xFFb2b7bf), fontSize: 12.0)),
-               obscureText: true,  ),
+                          obscureText: true,
+                        ),
                       ),
                       const SizedBox(
                         height: 30.0,
                       ),
                       GestureDetector(
-                        onTap: (){
-                          if(_formkey.currentState!.validate()){
-                           
+                        onTap: () {
+                          if (_formkey.currentState!.validate()) {
                             setState(() {
                               debugPrint('Sign Up');
                               email = mailcontroller.text;
@@ -353,7 +361,7 @@ onTap: () {
                           registration();
                         },
                         child: Container(
-                            width: MediaQuery.of(context).size.width/2,
+                            width: MediaQuery.of(context).size.width / 2,
                             padding: const EdgeInsets.symmetric(
                                 vertical: 5.0, horizontal: 10.0),
                             decoration: BoxDecoration(
@@ -421,8 +429,10 @@ onTap: () {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const LogIn()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LogIn()));
                     },
                     child: const Text(
                       "LogIn",
@@ -441,14 +451,13 @@ onTap: () {
     );
   }
 
-   Future getImage() async {
-        final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+  Future getImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     Uint8List _bytes = await image!.readAsBytes();
 
-        setState(() {
-          _image = image;
-          _base64String = base64.encode(_bytes);
-        });
-      }
+    setState(() {
+      _image = image;
+      _base64String = base64.encode(_bytes);
+    });
+  }
 }
-
