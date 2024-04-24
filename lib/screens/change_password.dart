@@ -23,8 +23,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
     final passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (!passwordRegex.hasMatch(value)) {
-      return 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters';
-    }
+
+      
+ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+            backgroundColor: Colors.orangeAccent,
+            content: Text(
+              'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
+              style: const TextStyle(fontSize: 18.0),
+            )));
+     return 'Password must be at least 8 unique characters ';    }
     return null;
   }
 

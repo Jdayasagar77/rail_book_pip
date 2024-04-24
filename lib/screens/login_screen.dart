@@ -37,6 +37,25 @@ late SharedPreferences prefs;
 
   final _formkey = GlobalKey<FormState>();
 
+ String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    // Define your password validation criteria here
+    // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
+    final passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+    if (!passwordRegex.hasMatch(value)) {
+       ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+            backgroundColor: Colors.orangeAccent,
+            content: Text(
+              'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
+              style: const TextStyle(fontSize: 18.0),
+            )));
+     return 'Password must be at least 8 unique characters ';
+    }
+    return null;
+  }
+
   userLogin() async {
     try {
       await FirebaseAuth.instance
@@ -128,12 +147,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
                           controller: passwordcontroller,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please Enter Password';
-                            }
-                            return null;
-                          },
+                          validator: _validatePassword,
                           decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Password",
