@@ -61,9 +61,16 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
         _trainName = trainName;
       } else {
         print('Request failed with status: ${response.statusCode}');
+        
       }
     } catch (error) {
       print('Error: $error');
+ ScaffoldMessenger.of(context).showSnackBar(
+                     SnackBar(
+                        duration: Duration(seconds: 5),
+                        content:
+                            Text('Network Error: $error')),
+                  );
     }
   }
 
@@ -92,18 +99,22 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
       } else {
         // Handle error message from the API
-                  ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(
-                        duration: Duration(seconds: 5),
-                        content:
-                            Text('Error: ${responseData['message']}')),
-                  );
+                 
              
         debugPrint('Error: ${responseData['message']}');
       }
     } else {
       // Handle HTTP error
       debugPrint('HTTP Error: ${response.statusCode}');
+
+      // Handle HTTP error
+      debugPrint('HTTP Error: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(
+                     SnackBar(
+                        duration: Duration(seconds: 5),
+                        content:
+                            Text('Error: ${response.body}')),
+                  );
     }
   }
 
@@ -132,18 +143,19 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
       } else {
         // Handle error message from the API
-                  ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(
-                        duration: Duration(seconds: 5),
-                        content:
-                            Text('Error: ${responseData['message']}')),
-                  );
-             
+                  
         debugPrint('Error: ${responseData['message']}');
       }
     } else {
       // Handle HTTP error
       debugPrint('HTTP Error: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(
+                     SnackBar(
+                        duration: Duration(seconds: 5),
+                        content:
+                            Text('Error: ${response.body}')),
+                  );
+             
     }
   }
 
