@@ -4,7 +4,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
-import 'package:rail_book_pip/screens/razor_pay.dart';
 import 'package:rail_book_pip/screens/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -173,17 +172,7 @@ if (FirebaseAuth.instance.currentUser != null) {
               const SizedBox(
                 height: 20.0,
               ),
-              GestureDetector(
-                onTap: (){
-  Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const Payment()));
-                                   },
-                child: const Text("Forgot Password?",
-                    style: TextStyle(
-                        color: Color(0xFF8c8e98),
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w500)),
-              ),
+             
               const SizedBox(
                 height: 40.0,
               ),

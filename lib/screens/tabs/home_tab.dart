@@ -43,7 +43,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     Uri uri = Uri.parse(url).replace(queryParameters: queryParams);
 
     Map<String, String> headers = {
-      'X-RapidAPI-Key': 'a9c5f69a29mshfcf7a5c5c1888b7p111ae8jsn92e54ecc4ee3',
+      'X-RapidAPI-Key': 'fdfaa3f240msha4a25388edb9d58p1da62djsn825aa66b0040',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
     };
 
@@ -70,7 +70,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   Future<void> searchFromStations(String query) async {
     final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': 'a9c5f69a29mshfcf7a5c5c1888b7p111ae8jsn92e54ecc4ee3',
+      'X-RapidAPI-Key': 'fdfaa3f240msha4a25388edb9d58p1da62djsn825aa66b0040',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
     };
 
@@ -110,7 +110,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   Future<void> searchToStations(String query) async {
     final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': 'a9c5f69a29mshfcf7a5c5c1888b7p111ae8jsn92e54ecc4ee3',
+      'X-RapidAPI-Key': 'fdfaa3f240msha4a25388edb9d58p1da62djsn825aa66b0040',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
     };
 
