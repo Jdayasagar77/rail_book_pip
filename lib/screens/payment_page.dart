@@ -1,10 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:rail_book_pip/models/payment_stripe.dart';
 import 'package:rail_book_pip/reusable_textfield.dart';
-
 
 class PaymentPageStripe extends StatefulWidget {
   const PaymentPageStripe({super.key});
@@ -83,35 +80,42 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
+              const SizedBox(
+              height: 100,
+            ),
             const Image(
-              image: AssetImage("assets/image.jpg"),
-              height: 300,
-              width: double.infinity,
+              image: AssetImage("assets/images/train1.png"),
+              height: 100,
               fit: BoxFit.cover,
             ),
         hasDonated? Padding(padding: const EdgeInsets.all(8.0),
         child:Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+             const SizedBox(
+              height: 50,
+            ),
             Text(
-              "Thanks for your ${amountController.text} $selectedCurrency donation",
+              "Order Successfull",
               style: const TextStyle(
                   fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const SizedBox(
-              height: 6,
+              height: 16,
             ),
-            const Text(
-              "We appreciate your support",
+             Text(
+              "Thanks for Booking Train Tickets on Rail PiP with Amount $selectedCurrency${amountController.text}",
               style: TextStyle(
                 fontSize: 18,
               ),
             ),
+            /*
             const SizedBox(
-              height: 16,
+              height: 56,
             ),
             SizedBox(
               height: 50,
@@ -120,20 +124,19 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent.shade400),
                 child: const Text(
-                  "Donate again",
+                  "Back to Main Page",
                   style: TextStyle(
                       color: Colors.white,
                       // fontWeight: FontWeight.bold,
                       fontSize: 16),
                 ),
                 onPressed: () {
-                  setState(() {
-                    hasDonated = false;
-                    amountController.clear();
-                  });
+                 Navigator.popUntil(context, (route) => true);
                 },
               ),
             ),
+
+            */
           ],
         ),
         ) :
@@ -144,7 +147,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Support us with your donations",
+                        "Fill Details for Payment",
                         style:
                             TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                       ),
@@ -159,8 +162,8 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                                 formkey: formkey,
                                 controller: amountController,
                                 isNumber: true,
-                                title: "Donation Amount",
-                                hint: "Any amount you like"),
+                                title: "Payment Amount",
+                                hint: ""),
                           ),
                           const SizedBox(
                             width: 10,

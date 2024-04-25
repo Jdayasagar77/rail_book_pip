@@ -3,6 +3,7 @@ import 'dart:convert';
 import  'package:http/http.dart' as http;
 
 Future createPaymentIntent({
+
   required String name,
   required String address,
   required String pin,
@@ -10,7 +11,9 @@ Future createPaymentIntent({
   required String state,
   required String country,
   required String currency,
-  required String amount}) async{
+  required String amount
+  
+  }) async {
 
   final url = Uri.parse('https://api.stripe.com/v1/payment_intents');
   
@@ -20,7 +23,7 @@ Future createPaymentIntent({
     'amount': amount,
     'currency': currency.toLowerCase(),
     'automatic_payment_methods[enabled]': 'true',
-    'description': "Test Donation",
+    'description': "Test Payment",
     'shipping[name]': name,
     'shipping[address][line1]': address,
     'shipping[address][postal_code]': pin,
@@ -47,4 +50,5 @@ Future createPaymentIntent({
   else{
     print("error in calling payment intent");
   }
+
 }

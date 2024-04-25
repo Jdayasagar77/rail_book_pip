@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +6,9 @@ import 'package:rail_book_pip/screens/payment_page.dart';
 import 'package:rail_book_pip/screens/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 class Page1 extends StatelessWidget {
+
   const Page1({super.key});
 
   @override
@@ -18,14 +18,18 @@ class Page1 extends StatelessWidget {
       home: LogIn(),
     );
   }
+
 }
 
 class LogIn extends StatefulWidget {
+
   const LogIn({super.key});
 
   @override
   State<LogIn> createState() => _LogInState();
+
 }
+
 
 class _LogInState extends State<LogIn> {
   String email = "", password = "";
@@ -216,7 +220,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                   GestureDetector(
                     onTap: (){
                     //  AuthMethods().signInWithGoogle(context);
-
+//
                     },
                     child: Image.asset(
                       "assets/images/google.png",
@@ -232,7 +236,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                     onTap: (){
                     //  AuthMethods().signInWithApple();
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentPageStripe()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const PaymentPageStripe()));
 
 
                     },
