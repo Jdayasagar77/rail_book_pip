@@ -16,6 +16,7 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
+
   TextEditingController _departurecontroller = TextEditingController();
 
   TextEditingController _fromstationController = TextEditingController();
@@ -23,17 +24,19 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   TextEditingController _tostationController = TextEditingController();
 
   List<Station> _stationsFrom = [];
-  List<Station> _stationsTo = [ ]; // Example station names
+  List<Station> _stationsTo = []; // Example station names
 
   List<String> _trainNumbers = [];
   List<String> _trainName = [];
 
   Future<void> searchTrains() async {
+    
     String fromStationCode = selectedFrom;
     String toStationCode = selectedTo;
     String dateOfJourney = _departurecontroller.text;
 
     String url = 'https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations';
+   
     Map<String, String> queryParams = {
       'fromStationCode': fromStationCode,
       'toStationCode': toStationCode,
@@ -69,13 +72,16 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                      SnackBar(
                         duration: Duration(seconds: 5),
                         content:
-                            Text('Network Error: $error')),
+                            Text('Network Error: $error'),
+                            ),
                   );
     }
   }
 
   Future<void> searchFromStations(String query) async {
+
     final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
+   
     final Map<String, String> headers = {
       'X-RapidAPI-Key': 'fdfaa3f240msha4a25388edb9d58p1da62djsn825aa66b0040',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
@@ -95,7 +101,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
               .map((stationData) => Station.fromJson(stationData)));
 
         });
-                                                                showFromStation();
+            showFromStation();
 
       } else {
         // Handle error message from the API
@@ -104,6 +110,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
         debugPrint('Error: ${responseData['message']}');
       }
     } else {
+
       // Handle HTTP error
       debugPrint('HTTP Error: ${response.statusCode}');
 
@@ -113,12 +120,14 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                      SnackBar(
                         duration: Duration(seconds: 5),
                         content:
-                            Text('Error: ${response.body}')),
-                  );
+                            Text('Error: ${response.body}'),
+                            ),
+        );
     }
   }
 
   Future<void> searchToStations(String query) async {
+
     final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
     final Map<String, String> headers = {
       'X-RapidAPI-Key': 'fdfaa3f240msha4a25388edb9d58p1da62djsn825aa66b0040',
@@ -142,8 +151,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
                                                                          showToStation();
 
       } else {
+
         // Handle error message from the API
-                  
         debugPrint('Error: ${responseData['message']}');
       }
     } else {

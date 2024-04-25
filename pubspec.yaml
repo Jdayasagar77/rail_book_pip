@@ -50,6 +50,8 @@ dependencies:
   image_cropper: ^5.0.1
   http: ^1.2.1
   google_fonts: ^6.2.1
+  stripe_checkout: ^1.0.2
+  flutter_stripe: ^10.1.1
   
 
 dev_dependencies:

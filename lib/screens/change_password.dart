@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rail_book_pip/models/shared_preferences.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   @override
@@ -22,15 +20,16 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     // Define your password validation criteria here
     // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
     final passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+    
     if (!passwordRegex.hasMatch(value)) {
 
-      
-ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
             backgroundColor: Colors.orangeAccent,
             content: Text(
               'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
-              style: const TextStyle(fontSize: 18.0),
-            )));
+              style: TextStyle(fontSize: 18.0),),
+            ),
+            );
      return 'Password must be at least 8 unique characters ';    }
     return null;
   }
@@ -99,7 +98,8 @@ debugPrint('Password Correct');
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     content: Text(
-                                        'Password updated successfully')),
+                                        'Password updated successfully'),
+                                        ),
                               );
                             }).catchError((error) {
                               ScaffoldMessenger.of(context).showSnackBar(

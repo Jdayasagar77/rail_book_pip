@@ -15,7 +15,7 @@ class _EditUserDetailsPageState extends State<EditUserDetailsPage> {
   TextEditingController _dobController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _mobileController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
+//  TextEditingController _addressController = TextEditingController();
 
   onTapFunction({required BuildContext context}) async {
     DateTime? pickedDate = await showDatePicker(
@@ -99,13 +99,11 @@ class _EditUserDetailsPageState extends State<EditUserDetailsPage> {
                 validator: (value) {
                   final emailRegex =
                       RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
                   if (value == null || value.isEmpty) {
                     return 'Please Enter Email';
                   } else if (!emailRegex.hasMatch(value)) {
                     return 'Please Enter a Valid Email address';
                   }
-
                   return null;
                 },
               ),
