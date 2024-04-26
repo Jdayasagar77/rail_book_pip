@@ -28,7 +28,7 @@ class _BottomTabBarScreenState extends State<BottomTabBarScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _tabs = [
-     HomeTab(),
+    const HomeTab(),
     const MyAccountTab(),
     const MyTransactionsTab(),
   ];

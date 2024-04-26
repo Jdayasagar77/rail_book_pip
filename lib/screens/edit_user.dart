@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rail_book_pip/models/shared_preferences.dart';
+import 'package:rail_book_pip/models/shared_pref.dart';
 
 class EditUserDetailsPage extends StatefulWidget {
   @override

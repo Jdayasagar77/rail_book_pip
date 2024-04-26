@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/intl.dart';
 import 'package:rail_book_pip/models/payment_stripe.dart';
@@ -58,6 +57,7 @@ _PaymentPageStripeState({required this.myTrain, required  this.mySeat});
     'GBP',
     'AED'
   ];
+
   String selectedCurrency = 'USD';
 
   bool hasDonated = false;
@@ -94,7 +94,6 @@ debugPrint(mySeat.date);
           "name": nameController.text,
           "transactionID": generateTransactionId(),
           "amount": amountController.text,
-          
           "currentStatus": mySeat.currentStatus,
            "trainName": myTrain.trainName,
           "trainNo": myTrain.trainNumber,
@@ -107,7 +106,7 @@ debugPrint(myTrain.trainNumber);
 debugPrint(mySeat.currentStatus);
 debugPrint(mySeat.date);
 
-            final userDocRef = db.collection("Users").doc(prefs.getString('userUID'));
+final userDocRef = db.collection("Users").doc(prefs.getString('userUID'));
 
 // Create a reference to the subcollection within the user document
 final transactionCollectionRef = userDocRef.collection("transaction");
