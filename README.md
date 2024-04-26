@@ -38,3 +38,5 @@ SLEEPER CLASS
 Passenger Details
 JAKATE ANITHA, age, Class anitha@gmail.com
 
+Transaction Model
+name, amount, transactionID, quota, currentstatus, class, train name,no; date

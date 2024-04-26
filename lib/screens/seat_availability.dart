@@ -1,30 +1,29 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:rail_book_pip/models/seatavailable.dart';
-import 'package:rail_book_pip/models/train_search.dart';
-import 'package:rail_book_pip/screens/stripe_payment.dart';
-
+import 'package:rail_book_pip/screens/payment_page.dart';
 import '../models/train_model.dart';
+
 
 class SeatAvailabilityScreen extends StatefulWidget {
   final SeatAvailabilityParams seatAvailabilityParams;
+  final Train myTrain;
   const SeatAvailabilityScreen(
-      {Key? key, required this.seatAvailabilityParams})
+      {Key? key, required this.seatAvailabilityParams, required this.myTrain})
       : super(key: key);
   @override
   _SeatAvailabilityScreenState createState() => _SeatAvailabilityScreenState(
-      seatAvailabilityParams: this.seatAvailabilityParams);
+      seatAvailabilityParams: this.seatAvailabilityParams, myTrain : this.myTrain);
 }
 
 class _SeatAvailabilityScreenState extends State<SeatAvailabilityScreen> {
 
-  var _seats;
-
+  List<SeatAvailability> _seats = [];
+  Train myTrain;
   SeatAvailabilityParams seatAvailabilityParams;
   _SeatAvailabilityScreenState(
-      {required this.seatAvailabilityParams});
+      {required this.seatAvailabilityParams, required this.myTrain});
 
   
 @override
@@ -101,62 +100,56 @@ void initState() {
         title: const Text('IRCTC Seat Availability'),
       ),
       body: 
-      FutureBuilder(
-  future: Future.delayed(const Duration(seconds: 1), () => 'Loaded'), // Assuming checkSeatAvailability returns Future<void>
-  builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-    checkSeatAvailability();
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return Center(child: CircularProgressIndicator());
-    } else if (snapshot.hasError) {
-      return Center(child: Text('Error: ${snapshot.error}'));
-    } else {
-      return ListView.builder(
-        itemCount: _seats.length,
-       itemBuilder: (context, index) {
-                SeatAvailability seat = _seats[index];
-                return GestureDetector(
-                  onTap: () {
-                    //       Navigator.push(context, MaterialPageRoute(builder: (context) => const StripePaymentScreen()));
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                      elevation: 4,
+          FutureBuilder(
+            future: Future.delayed(const Duration(seconds: 1), () => 'Loaded'), // Assuming checkSeatAvailability returns Future<void>
+            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+              checkSeatAvailability();
+              if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+          return ListView.builder(
+            itemCount: _seats.length,
+           itemBuilder: (context, index) {
+                    SeatAvailability seat = _seats[index];
+                    return GestureDetector(
+                      onTap: () {
+          
+                        Navigator.push(context, MaterialPageRoute(builder: (context) =>  PaymentPageStripe(myTrain: myTrain, mySeat: seat,)));
+                     
+                      },
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                               'Yo',
-                           //   '${trainNameBro}',
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          elevation: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 8),
+                                Text('Date: ${seat.date}'),
+                                Text('Fare: ${seat.totalFare}'),
+                                Text('Current Status: ${seat.currentStatus}'),
+                                Text(
+                                    'Confirm Probability: ${seat.confirmProbability}'),
+                              ],
                             ),
-                            Text(
-                              'Yo',
-                           //   'Train: ${trainNumber}',
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            Text('Date: ${seat.date}'),
-                            Text('Fare: ${seat.totalFare}'),
-                            Text('Current Status: ${seat.currentStatus}'),
-                            Text(
-                                'Confirm Probability: ${seat.confirmProbability} (${seat.confirmProbabilityPercent}%)'),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                );
-              },
-      );
-    }
-  },
-)
+                    );
+                  },
+          );
+              }
+            },
+          ),
+        
+      
       /*
+
+
       _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(

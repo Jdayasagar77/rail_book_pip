@@ -235,10 +235,6 @@ if (FirebaseAuth.instance.currentUser != null) {
                   GestureDetector(
                     onTap: (){
                     //  AuthMethods().signInWithApple();
-
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const PaymentPageStripe()));
-
-
                     },
                     child: Image.asset(
                       "assets/images/apple.png",

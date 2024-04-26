@@ -1,19 +1,35 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:intl/intl.dart';
 import 'package:rail_book_pip/models/payment_stripe.dart';
+import 'package:rail_book_pip/models/seatavailable.dart';
 import 'package:rail_book_pip/reusable_textfield.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/train_model.dart';
 
 class PaymentPageStripe extends StatefulWidget {
-  const PaymentPageStripe({super.key});
+   
+    final Train myTrain;
+    final SeatAvailability mySeat;
+   PaymentPageStripe({super.key, required this.myTrain, required this.mySeat});
 
   @override
-  State<PaymentPageStripe> createState() => _PaymentPageStripeState();
+  State<PaymentPageStripe> createState() => _PaymentPageStripeState(myTrain : this.myTrain, mySeat : this.mySeat);
 }
 
 class _PaymentPageStripeState extends State<PaymentPageStripe> {
+  final db = FirebaseFirestore.instance;
+  Train myTrain;
+SeatAvailability mySeat;
+_PaymentPageStripeState({required this.myTrain, required  this.mySeat});
+
   TextEditingController amountController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
@@ -22,6 +38,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
   TextEditingController stateController = TextEditingController();
   TextEditingController countryController = TextEditingController();
   TextEditingController pincodeController = TextEditingController();
+
 
   final formkey = GlobalKey<FormState>();
   final formkey1 = GlobalKey<FormState>();
@@ -47,8 +64,73 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
 
   bool paymentCompleted = false;
   Duration paymentTimeoutDuration = Duration(minutes: 7);
+  
+static String generateTransactionId() {
+  // Use a StringBuffer for efficient string building
+  final buffer = StringBuffer();
+  const length = 16;
+  const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  final random = Random();
+  for (int i = 0; i < length; i++) {
+    buffer.write(characters[random.nextInt(characters.length)]);
+  }
+  return buffer.toString();
+}
+
+
+  transactionRegistration() async {
+      final SharedPreferences prefs  = await SharedPreferences.getInstance();
+
+    debugPrint('${prefs.getString('userUID')}');
+debugPrint(myTrain.trainName);
+debugPrint(myTrain.trainNumber);
+debugPrint(mySeat.currentStatus);
+debugPrint(mySeat.date);
+
+    
+      
+
+        final transaction = <String, String> {
+          "name": nameController.text,
+          "transactionID": generateTransactionId(),
+          "amount": amountController.text,
+          
+          "currentStatus": mySeat.currentStatus,
+           "trainName": myTrain.trainName,
+          "trainNo": myTrain.trainNumber,
+          "date": mySeat.date,
+        };
+
+// Add a new document with a generated ID
+      debugPrint(myTrain.trainName);
+debugPrint(myTrain.trainNumber);
+debugPrint(mySeat.currentStatus);
+debugPrint(mySeat.date);
+
+            final userDocRef = db.collection("Users").doc(prefs.getString('userUID'));
+
+// Create a reference to the subcollection within the user document
+final transactionCollectionRef = userDocRef.collection("transaction");
+
+// Generate a unique document ID (optional, but recommended)
+final String transactionId =  DateFormat('yyyy-MM-dd').format(DateTime.now());
+// Create a new document within the subcollection
+transactionCollectionRef.doc(transactionId).set(transaction);
+            
+debugPrint('${prefs.getString('userUID')}');
+
+        // ignore: use_build_context_synchronously
+       
+}
+  
+
+
+
+
+
 
 void startPaymentTimeout(context) {
+
   int remainingSeconds = paymentTimeoutDuration.inSeconds;
 
   Timer timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -323,6 +405,7 @@ void handlePaymentTimeout() {
                                     color: Colors.white, fontSize: 16),
                               ),
                               onPressed: () async {
+
                                 if (formkey.currentState!.validate() &&
                                     formkey1.currentState!.validate() &&
                                     formkey2.currentState!.validate() &&
@@ -330,14 +413,13 @@ void handlePaymentTimeout() {
                                     formkey4.currentState!.validate() &&
                                     formkey5.currentState!.validate() &&
                                     formkey6.currentState!.validate()) {
+
                                   await initPaymentSheet();
 
                                   try {
-startPaymentTimeout(context);
+
+                                   // startPaymentTimeout(context);
                                     await Stripe.instance.presentPaymentSheet();
-
-                                   
-
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(const SnackBar(
                                       content: Text(
@@ -346,18 +428,23 @@ startPaymentTimeout(context);
                                       ),
                                       backgroundColor: Colors.green,
                                     ));
+transactionRegistration();
 
                                     setState(() {
+
                                       hasDonated = true;
                                       paymentCompleted = true;
+
+
+
                                     });
 
-                                    nameController.clear();
                                     addressController.clear();
                                     cityController.clear();
                                     stateController.clear();
                                     countryController.clear();
                                     pincodeController.clear();
+
                                   } catch (e) {
                                     print("Payment Sheet failed");
                                     ScaffoldMessenger.of(context)
@@ -378,5 +465,10 @@ startPaymentTimeout(context);
         ),
       ),
     );
+  }
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<TextEditingController>('nameController', nameController));
   }
 }
