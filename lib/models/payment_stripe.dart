@@ -42,12 +42,12 @@ Future createPaymentIntent({
 
   print(body);
 
-  if(response.statusCode==200){
+  if(response.statusCode==200) {
     var json=jsonDecode(response.body);
     print(json);
     return json;
   }
-  else{
+  else {
     print("error in calling payment intent");
   }
 
