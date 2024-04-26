@@ -34,20 +34,19 @@ class SeatAvailability {
 
 
 
-class SeatAvailabilityParams {
+class TrainSearchRequest {
+  
   final String classType;
   final String fromStationCode;
   final String quota;
   final String toStationCode;
-  final List<String> trainNo;
   final String date;
 
-  SeatAvailabilityParams({
+  TrainSearchRequest({
     required this.classType,
     required this.fromStationCode,
     required this.quota,
     required this.toStationCode,
-    required this.trainNo,
     required this.date,
   });
 
@@ -57,7 +56,6 @@ class SeatAvailabilityParams {
       'fromStationCode': fromStationCode,
       'quota': quota,
       'toStationCode': toStationCode,
-      'trainNo': trainNo,
       'date': date,
     };
   }

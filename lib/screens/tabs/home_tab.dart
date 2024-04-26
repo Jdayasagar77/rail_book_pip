@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:rail_book_pip/models/seatavailable.dart';
 import 'package:rail_book_pip/models/station.dart';
 import 'package:http/http.dart' as http;
-import 'package:rail_book_pip/models/train.dart';
+import 'package:rail_book_pip/models/train_search.dart';
 import 'package:rail_book_pip/models/train_model.dart';
 import 'package:rail_book_pip/screens/seat_availability.dart';
 
@@ -326,7 +326,7 @@ debugPrint("No Stations Found yet");
               const SizedBox(height: 12.0),
               ElevatedButton(
                 onPressed: (){
-                  searchTrains(selectedFrom, selectedTo, _departurecontroller.text);
+                  //searchTrains(selectedFrom, selectedTo, _departurecontroller.text);
                  
                   if (selectedClass.isNotEmpty &&
                       selectedFrom.isNotEmpty &&
@@ -334,21 +334,13 @@ debugPrint("No Stations Found yet");
                       selectedTo.isNotEmpty &&
                       _departurecontroller.text.isNotEmpty) {
 
-                        final totalTrainNos =  _trains.map((train) => train.trainNumber).toList();
-                   debugPrint('$totalTrainNos');
+                  //       final totalTrainNos =  _trains.map((train) => train.trainNumber).toList();
+                  //  debugPrint('$totalTrainNos');
                     Navigator.push(
                         context,
                         MaterialPageRoute(
           
-                            builder: (context) => SeatAvailabilityScreen(
-                                  seatAvailabilityParams: SeatAvailabilityParams(
-                                      classType: selectedClass,
-                                      fromStationCode: selectedFrom,
-                                      date: _departurecontroller.text,
-                                      toStationCode: selectedTo,
-                                      quota: selectedQuota, trainNo: totalTrainNos,
-                                      ), trains: _trains,
-                                )));
+                            builder: (context) => TrainSearchScreen(trainAvailabilityParams: TrainSearchRequest(classType: selectedClass, fromStationCode: selectedFrom, quota: selectedQuota, toStationCode: selectedTo, date: _departurecontroller.text))));
                                 
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -470,10 +462,10 @@ debugPrint("No Stations Found yet");
           child: Column(
             children: [
               ListTile(
-                title: const Text('AC'),
+                title: const Text('2A'),
                 onTap: () {
                   setState(() {
-                    selectedClass = 'AC';
+                    selectedClass = '2A';
                   });
                   Navigator.pop(context);
                 },
@@ -515,16 +507,17 @@ debugPrint("No Stations Found yet");
                 title: const Text('GEN'),
                 onTap: () {
                   setState(() {
-                    selectedQuota = 'GEN';
+                    selectedQuota = 'GN';
                   });
                   Navigator.pop(context);
                 },
               ),
+              //['GN', 'LD', 'TQ']
               ListTile(
                 title: const Text('Ladies'),
                 onTap: () {
                   setState(() {
-                    selectedQuota = 'Ladies';
+                    selectedQuota = 'LD';
                   });
                   Navigator.pop(context);
                 },
@@ -533,7 +526,7 @@ debugPrint("No Stations Found yet");
                 title: const Text('Tatkal'),
                 onTap: () {
                   setState(() {
-                    selectedQuota = 'Tatkal';
+                    selectedQuota = 'TQ';
                   });
                   Navigator.pop(context);
                 },
