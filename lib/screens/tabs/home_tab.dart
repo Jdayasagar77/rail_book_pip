@@ -1,13 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:rail_book_pip/models/station.dart';
 import 'package:http/http.dart' as http;
 import 'package:rail_book_pip/screens/train_search.dart';
-import 'package:rail_book_pip/models/train_model.dart';
 import 'package:rail_book_pip/models/train_searchrequest.dart';
+
 
 class HomeTab extends StatefulWidget {
   const HomeTab({Key? key}) : super(key: key);
@@ -26,59 +25,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
   List<Station> _stationsFrom = [];
   List<Station> _stationsTo = []; // Example station names
-
-  List<Train> _trains = [];
-
-
-  Future<void> searchTrains(String fromStationCode, String toStationCode, String dateOfJourney) async {
-    debugPrint(fromStationCode);
-       debugPrint(toStationCode);
-    debugPrint(dateOfJourney);
-
-const baseUrl = 'https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations';
-
-final url = Uri.parse('$baseUrl?fromStationCode=$fromStationCode&toStationCode=$toStationCode&dateOfJourney=$dateOfJourney');
-
-
-final Map<String, String> headers = {
-      'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
-      'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
-    };
-      final response = await http.get(url, headers: headers);
-         debugPrint(response.body);
-
-    try {
-
-      final responseData = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        //Handle the response data as needed
-
-       _trains = List<Train>.from(responseData['data']
-              .map((trainData) => Train.fromJson(trainData)));
-
-         debugPrint('${responseData}');
-
-
-      } else {
-        print('Request failed with status: ${response.statusCode}');
-      }
-    } catch (error) {
-      if (_trains.isEmpty){
-              print('Request failed with status: ${response.statusCode}');
-         debugPrint('${response}');
-
-      print('Error: $error');
- ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(
-                        duration: const Duration(seconds: 5),
-                        content:
-                            Text('Network Error: $error'),
-                            ),
-                  );
-      }
-    }
-  }
+  
 
   Future<void> searchFromStations(String query) async {
 
@@ -325,7 +272,6 @@ debugPrint("No Stations Found yet");
               const SizedBox(height: 12.0),
               ElevatedButton(
                 onPressed: (){
-                  //searchTrains(selectedFrom, selectedTo, _departurecontroller.text);
                  
                   if (selectedClass.isNotEmpty &&
                       selectedFrom.isNotEmpty &&
@@ -333,8 +279,6 @@ debugPrint("No Stations Found yet");
                       selectedTo.isNotEmpty &&
                       _departurecontroller.text.isNotEmpty) {
 
-                  //       final totalTrainNos =  _trains.map((train) => train.trainNumber).toList();
-                  //  debugPrint('$totalTrainNos');
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -349,38 +293,6 @@ debugPrint("No Stations Found yet");
                   }
                 },
                 child: const Text('Search'),
-              ),
-              const SizedBox(height: 12.0),
-              ElevatedButton(
-                onPressed: () async {
-                  const offlineTo = 'BVI';
-                  const offlineFrom = 'ST';
-                  final String response =
-                      await rootBundle.loadString('assets/json/train.json');
-                  List<String> trainNumbers = jsonDecode(response)["data"]
-                      .map<String>((train) => train["train_number"].toString())
-                      .toList();
-                  List<String> trainName = jsonDecode(response)["data"]
-                      .map<String>((train) => train["train_name"].toString())
-                      .toList();
-                  debugPrint('$trainName');
-                  debugPrint('$trainNumbers');
-          
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => SeatAvailabilityScreen(
-                  //               seatAvailabilityParams: SeatAvailabilityParams(
-                  //                   classType: selectedClass,
-                  //                   fromStationCode: offlineFrom,
-                  //                   date: _departurecontroller.text,
-                  //                   toStationCode: offlineTo,
-                  //                   quota: selectedQuota,
-                  //                   trainNo: trainNumbers),
-                  //               trainName: trainName,
-                  //             )));
-                },
-                child: const Text('Search on Offline Data'),
               ),
             ],
           ),

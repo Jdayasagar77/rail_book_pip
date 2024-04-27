@@ -1,9 +1,8 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:rail_book_pip/controllers/exception_handling.dart';
 import 'package:rail_book_pip/models/seatavailable.dart';
-import 'package:rail_book_pip/models/train_model.dart';
 import 'package:rail_book_pip/models/train_searchrequest.dart';
+import 'package:rail_book_pip/networkservices/search_train_service.dart';
 import 'package:rail_book_pip/screens/seat_availability.dart';
 
 class TrainSearchScreen extends StatefulWidget {
@@ -18,66 +17,9 @@ class TrainSearchScreen extends StatefulWidget {
 class _TrainSearchScreenState extends State<TrainSearchScreen> {
   _TrainSearchScreenState({required this.trainAvailabilityParams});
 
-  List<Train> _trains = [];
   TrainSearchRequest trainAvailabilityParams;
 
-  @override
-  void initState() {
-    super.initState();
-    searchTrains(
-      trainAvailabilityParams.fromStationCode,
-      trainAvailabilityParams.toStationCode,
-      trainAvailabilityParams.date,
-      trainAvailabilityParams.classType,
-    );
-  }
-
-  Future<void> searchTrains(String fromStationCode, String toStationCode,
-      String dateOfJourney, String myClassType) async {
-
-    debugPrint(fromStationCode);
-    debugPrint(toStationCode);
-    debugPrint(dateOfJourney);
-
-    const baseUrl = 'https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations';
-
-    final url = Uri.parse('$baseUrl?fromStationCode=$fromStationCode&toStationCode=$toStationCode&dateOfJourney=$dateOfJourney');
-
-    final Map<String, String> headers = {
-      'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
-      'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
-    };
-
-    final response = await http.get(url, headers: headers);
-    debugPrint(response.body);
-
-    try {
-      final responseData = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        //Handle the response data as needed
-        _trains = List<Train>.from(
-            responseData['data'].map((trainData) => Train.fromJson(trainData)));
-
-        debugPrint('${responseData}');
-      } else {
-        print('Request failed with status: ${response.statusCode}');
-      }
-    } catch (error) {
-      if (_trains.isEmpty) {
-        print('Request failed with status: ${response.statusCode}');
-        debugPrint('${response}');
-
-        print('Error: $error');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            duration: const Duration(seconds: 5),
-            content: Text('Network Error: $error'),
-          ),
-        );
-      }
-    }
-  }
+    TrainSearchService _trainService = TrainSearchService();
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +33,14 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
+
+               return CustomErrorWidget(errorMessage: snapshot.error.toString());
+              
               } else {
                 return ListView.builder(
-                  itemCount: _trains.length,
+                  itemCount: snapshot.data?.length,
                   itemBuilder: (context, index) {
-                    final train = _trains[index];
+                    final train = snapshot.data?[index];
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -105,7 +49,7 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                                 builder: (context) => SeatAvailabilityScreen(
                                     seatAvailabilityParams:
                                         SeatAvailabilityParams(
-                                            trainNo: train.trainNumber,
+                                            trainNo: train!.trainNumber,
                                             fromStationCode: train.from,
                                             toStationCode: train.to,
                                             date: train.trainDate,
@@ -125,7 +69,7 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${train.trainNumber} - ${train.trainName}',
+                                '${train?.trainNumber} - ${train?.trainName}',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -133,7 +77,7 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                'Run Days: ${train.runDays.join(", ")}',
+                                'Run Days: ${train?.runDays.join(", ")}',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -141,50 +85,28 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                               ),
                               const Divider(),
                               Text(
-                                'Source: ${train.fromStationName} (${train.from})',
+                                'Source: ${train?.fromStationName} (${train?.from})',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                'Departure: ${train.fromStd}',
+                                'Departure: ${train?.fromStd}',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                'Destination: ${train.toStationName} (${train.to})',
+                                'Destination: ${train?.toStationName} (${train?.to})',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                'Arrival: ${train.toStd}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Divider(),
-                              Text(
-                                'Duration: ${train.duration}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                'Train Type: ${train.trainType}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                'Train Date: ${train.trainDate}',
+                                'Arrival: ${train?.toStd}',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -192,7 +114,29 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                               ),
                               const Divider(),
                               Text(
-                                'Classes Available: ${train.classType.join(", ")}',
+                                'Duration: ${train?.duration}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'Train Type: ${train?.trainType}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'Train Date: ${train?.trainDate}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const Divider(),
+                              Text(
+                                'Classes Available: ${train?.classType.join(", ")}',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -207,7 +151,9 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                 );
               }
             },
-            future: Future.delayed(const Duration(seconds: 1), () => 'Loaded'),
+            future: _trainService.searchTrains(  trainAvailabilityParams.fromStationCode,
+      trainAvailabilityParams.toStationCode,
+      trainAvailabilityParams.date,),
           ),
         ));
   }
