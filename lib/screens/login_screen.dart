@@ -2,7 +2,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
-import 'package:rail_book_pip/screens/payment_page.dart';
 import 'package:rail_book_pip/screens/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

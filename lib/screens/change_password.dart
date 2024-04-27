@@ -13,24 +13,27 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   TextEditingController _newPasswordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
 
- String? _validatePassword(String? value) {
+  String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
     // Define your password validation criteria here
     // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
-    final passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-    
-    if (!passwordRegex.hasMatch(value)) {
+    final passwordRegex =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
 
-ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
-            backgroundColor: Colors.orangeAccent,
-            content: Text(
-              'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
-              style: TextStyle(fontSize: 18.0),),
-            ),
-            );
-     return 'Password must be at least 8 unique characters ';    }
+    if (!passwordRegex.hasMatch(value)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.orangeAccent,
+          content: Text(
+            'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
+            style: TextStyle(fontSize: 18.0),
+          ),
+        ),
+      );
+      return 'Password must be at least 8 unique characters ';
+    }
     return null;
   }
 
@@ -48,12 +51,11 @@ ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
-                controller: _currentPasswordController,
-                obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: 'Current Password'),
-                validator: _validatePassword
-              ),
+                  controller: _currentPasswordController,
+                  obscureText: true,
+                  decoration:
+                      const InputDecoration(labelText: 'Current Password'),
+                  validator: _validatePassword),
               TextFormField(
                 controller: _newPasswordController,
                 obscureText: true,
@@ -71,8 +73,6 @@ ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
               ElevatedButton(
                 onPressed: () {
                   if (FirebaseAuth.instance.currentUser != null) {
-                 
-
                     final docRef = FirebaseFirestore.instance
                         .collection("Users")
                         .doc(FirebaseAuth.instance.currentUser?.uid);
@@ -81,10 +81,11 @@ ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
                         final data = doc.data() as Map<String, dynamic>;
                         if (_formKey.currentState!.validate()) {
                           // Change password logic goes here
-                          if (_currentPasswordController.text == data['password'] &&
+                          if (_currentPasswordController.text ==
+                                  data['password'] &&
                               _newPasswordController.text ==
                                   _confirmPasswordController.text) {
-debugPrint('Password Correct');
+                            debugPrint('Password Correct');
 
                             FirebaseAuth.instance.currentUser?.updatePassword(
                                 _confirmPasswordController.text);
@@ -97,9 +98,9 @@ debugPrint('Password Correct');
                             }).then((value) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content: Text(
-                                        'Password updated successfully'),
-                                        ),
+                                  content:
+                                      Text('Password updated successfully'),
+                                ),
                               );
                             }).catchError((error) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -110,10 +111,10 @@ debugPrint('Password Correct');
                             });
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text('Check Your Credentials Properly')),
-                              );
+                              const SnackBar(
+                                  content:
+                                      Text('Check Your Credentials Properly')),
+                            );
                           }
                         }
                       },

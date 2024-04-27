@@ -171,21 +171,21 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                               const Divider(),
                               Text(
                                 'Duration: ${train.duration}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Train Type: ${train.trainType}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Train Date: ${train.trainDate}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -193,7 +193,7 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                               const Divider(),
                               Text(
                                 'Classes Available: ${train.classType.join(", ")}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),

@@ -8,7 +8,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/intl.dart';
 import 'package:rail_book_pip/models/payment_stripe.dart';
 import 'package:rail_book_pip/models/seatavailable.dart';
-import 'package:rail_book_pip/reusable_textfield.dart';
+import 'package:rail_book_pip/widgets/reusable_textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/train_model.dart';
@@ -63,7 +63,7 @@ _PaymentPageStripeState({required this.myTrain, required  this.mySeat});
   bool hasDonated = false;
 
   bool paymentCompleted = false;
-  Duration paymentTimeoutDuration = Duration(minutes: 7);
+  Duration paymentTimeoutDuration = const Duration(minutes: 7);
   
 static String generateTransactionId() {
   // Use a StringBuffer for efficient string building
@@ -86,10 +86,7 @@ debugPrint(myTrain.trainName);
 debugPrint(myTrain.trainNumber);
 debugPrint(mySeat.currentStatus);
 debugPrint(mySeat.date);
-
-    
       
-
         final transaction = <String, String> {
           "name": nameController.text,
           "transactionID": generateTransactionId(),
@@ -114,7 +111,8 @@ final transactionCollectionRef = userDocRef.collection("transaction");
 // Generate a unique document ID (optional, but recommended)
 final String transactionId =  DateFormat('yyyy-MM-dd').format(DateTime.now());
 // Create a new document within the subcollection
-transactionCollectionRef.doc(transactionId).set(transaction);
+transactionCollectionRef.add(transaction).then((documentSnapshot) =>
+    debugPrint("Added transaction Data with ID: ${documentSnapshot.id}"));
             
 debugPrint('${prefs.getString('userUID')}');
 
@@ -132,7 +130,7 @@ void startPaymentTimeout(context) {
 
   int remainingSeconds = paymentTimeoutDuration.inSeconds;
 
-  Timer timer = Timer.periodic(Duration(seconds: 1), (timer) {
+  Timer timer = Timer.periodic(const Duration(seconds: 1), (timer) {
     remainingSeconds--;
     if (remainingSeconds <= 0) {
       timer.cancel();
@@ -140,7 +138,7 @@ void startPaymentTimeout(context) {
     } else {
       SnackBar snackBar = SnackBar(
       content: Text("Time remaining: ${remainingSeconds ~/ 60}:${remainingSeconds % 60}",
-          style: TextStyle(fontSize: 20)),
+          style: const TextStyle(fontSize: 20)),
       backgroundColor: Colors.indigo,
       dismissDirection: DismissDirection.up,
       behavior: SnackBarBehavior.floating,

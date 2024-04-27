@@ -29,7 +29,7 @@ class _SeatAvailabilityScreenState extends State<SeatAvailabilityScreen> {
 @override
 void initState() {
   super.initState();
- // checkSeatAvailability();
+checkSeatAvailability();
 }
 
 
@@ -103,7 +103,6 @@ void initState() {
           FutureBuilder(
             future: Future.delayed(const Duration(seconds: 1), () => 'Loaded'), // Assuming checkSeatAvailability returns Future<void>
             builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-              checkSeatAvailability();
               if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {

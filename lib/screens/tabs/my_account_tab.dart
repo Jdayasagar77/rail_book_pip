@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:rail_book_pip/models/shared_pref.dart';
 import 'package:rail_book_pip/screens/change_password.dart';
 import 'package:rail_book_pip/screens/edit_user.dart';

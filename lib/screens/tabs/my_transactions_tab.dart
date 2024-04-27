@@ -44,7 +44,7 @@ Future<List<TransactionModel>> myTransactions() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text("My Transactions"),
+        title:  const Text("My Transactions"),
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder(
@@ -53,86 +53,91 @@ Future<List<TransactionModel>> myTransactions() async {
         return ListView.builder(
           itemCount: snapshot.data?.length,
           itemBuilder: (context, index) {
-            final transaction = snapshot.data?[index];
+            final transactionModel = snapshot.data?[index];
             return Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  transactionModel!.name,
+                  style: const TextStyle(fontSize: 16.0,
+                  fontWeight: FontWeight.bold
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                Row(
                   children: [
-                    Text(
-                      transaction!.name,
-                      style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                    const Text(
+                      'Transaction ID: '
                     ),
-                    const SizedBox(height: 8.0),
-                    Row(
-                      children: [
-                        Text(
-                          "Transaction ID: ",
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        Text(transaction.transactionID),
-                      ],
+                    Text(transactionModel!.transactionID
+                    ,
+                      style: TextStyle(fontWeight: FontWeight.bold),),
+                  ],
+                ),
+                const SizedBox(height: 4.0),
+                Row(
+                  children: [
+                    const Text(
+                      'Amount: '
                     ),
-                    const SizedBox(height: 4.0),
-                    Row(
-                      children: [
-                        Text(
-                          "Amount: ",
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        Text(
-                          "\Rs.${transaction.amount}",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                    Text(transactionModel.amount,
+                      style: TextStyle(fontWeight: FontWeight.bold),),
+                  ],
+                ),
+                const SizedBox(height: 4.0),
+                Row(
+                  children: [
+                    const Text(
+                      'Status: '
                     ),
-                    const SizedBox(height: 4.0),
-                    Row(
-                      children: [
-                        Text(
-                          "Status: ",
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        Text(transaction.currentStatus),
-                      ],
+                    Text(transactionModel.currentStatus,
+                      style: TextStyle(fontWeight: FontWeight.bold),),
+                  ],
+                ),
+                const SizedBox(height: 4.0),
+                Row(
+                  children: [
+                    const Text(
+                      'Train: ',
                     ),
-                    const SizedBox(height: 4.0),
-                    Row(
-                      children: [
-                        Text(
-                          "Train: ",
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        Text(transaction.trainName),
-                      ],
-                    ),
-                    const SizedBox(height: 4.0),
-                    Row(
-                      children: [
-                        Text(
-                          "Seat No: ",
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        Text(transaction.currentStatus),
-                      ],
-                    ),
-                    const SizedBox(height: 4.0),
-                    Row(
-                      children: [
-                        Text(
-                          "Date: ",
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        Text(
-                          transaction.date,
-                        ),
-                      ],
+                    Expanded(
+                      child: Text(
+                        transactionModel.trainName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis, // Handle overflow
+                      style: TextStyle(fontWeight: FontWeight.bold)
+                      ),
                     ),
                   ],
                 ),
-              ),
-            );
+                const SizedBox(height: 4.0),
+                Row(
+                  children: [
+                    const Text(
+                      'Train No: ',
+                      
+                    ),
+                    Text(transactionModel.trainNo,
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 4.0),
+                Row(
+                  children: [
+                    const Text(
+                      'Date: ',
+                    ),
+                    Text(transactionModel.date,
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
           },
         );
       },
