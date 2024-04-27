@@ -20,4 +20,5 @@ class SelecterTravellerController with ChangeNotifier {
     selected--;
     notifyListeners();
   }
+  
 }

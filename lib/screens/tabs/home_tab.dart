@@ -3,12 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:rail_book_pip/models/seatavailable.dart';
 import 'package:rail_book_pip/models/station.dart';
 import 'package:http/http.dart' as http;
-import 'package:rail_book_pip/models/train_search.dart';
+import 'package:rail_book_pip/screens/train_search.dart';
 import 'package:rail_book_pip/models/train_model.dart';
-import 'package:rail_book_pip/screens/seat_availability.dart';
+import 'package:rail_book_pip/models/train_searchrequest.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({Key? key}) : super(key: key);
@@ -83,7 +82,7 @@ final Map<String, String> headers = {
 
   Future<void> searchFromStations(String query) async {
 
-    final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
+    const String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
    
     final Map<String, String> headers = {
       'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
@@ -130,7 +129,7 @@ _stationsFrom = List<Station>.from(responseData['data']
 
   Future<void> searchToStations(String query) async {
 
-    final String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
+    const String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
     final Map<String, String> headers = {
       'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
       'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
@@ -354,8 +353,8 @@ debugPrint("No Stations Found yet");
               const SizedBox(height: 12.0),
               ElevatedButton(
                 onPressed: () async {
-                  final offlineTo = 'BVI';
-                  final offlineFrom = 'ST';
+                  const offlineTo = 'BVI';
+                  const offlineFrom = 'ST';
                   final String response =
                       await rootBundle.loadString('assets/json/train.json');
                   List<String> trainNumbers = jsonDecode(response)["data"]

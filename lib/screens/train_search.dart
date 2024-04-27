@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/models/seatavailable.dart';
 import 'package:rail_book_pip/models/train_model.dart';
+import 'package:rail_book_pip/models/train_searchrequest.dart';
 import 'package:rail_book_pip/screens/seat_availability.dart';
 
 class TrainSearchScreen extends StatefulWidget {

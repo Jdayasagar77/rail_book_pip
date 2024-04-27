@@ -33,30 +33,39 @@ class SeatAvailability {
 
 
 
-
-class TrainSearchRequest {
-  
-  final String classType;
+class SeatAvailabilityParams {
+  final String trainNo;
   final String fromStationCode;
-  final String quota;
   final String toStationCode;
   final String date;
+  final String classType; // Optional class type
+  final String quota; // Optional quota
 
-  TrainSearchRequest({
-    required this.classType,
+  SeatAvailabilityParams({
+    required this.trainNo,
     required this.fromStationCode,
-    required this.quota,
     required this.toStationCode,
     required this.date,
+    required this.classType,
+    required this.quota,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'classType': classType,
-      'fromStationCode': fromStationCode,
-      'quota': quota,
-      'toStationCode': toStationCode,
-      'date': date,
-    };
-  }
+  factory SeatAvailabilityParams.fromJson(Map<String, dynamic> json) =>
+      SeatAvailabilityParams(
+        trainNo: json['trainNo'] as String,
+        fromStationCode: json['fromStationCode'] as String,
+        toStationCode: json['toStationCode'] as String,
+        date: json['date'] as String,
+        classType: json['classType'] as String,
+        quota: json['quota'] as String,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'trainNo': trainNo,
+        'fromStationCode': fromStationCode,
+        'toStationCode': toStationCode,
+        'date': date,
+        'classType': classType,
+        'quota': quota,
+      };
 }
