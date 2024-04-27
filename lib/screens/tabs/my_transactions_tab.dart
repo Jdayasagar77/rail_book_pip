@@ -48,7 +48,8 @@ Future<List<TransactionModel>> myTransactions() async {
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder(
-      future: myTransactions(),
+      future: 
+      myTransactions(),
       builder: (context, snapshot) {
         return ListView.builder(
           itemCount: snapshot.data?.length,
@@ -61,7 +62,7 @@ Future<List<TransactionModel>> myTransactions() async {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  transactionModel!.name,
+                  transactionModel?.name ?? "Loading",
                   style: const TextStyle(fontSize: 16.0,
                   fontWeight: FontWeight.bold
                   ),
@@ -72,7 +73,7 @@ Future<List<TransactionModel>> myTransactions() async {
                     const Text(
                       'Transaction ID: '
                     ),
-                    Text(transactionModel!.transactionID
+                    Text(transactionModel?.transactionID ?? "Loading"
                     ,
                       style: TextStyle(fontWeight: FontWeight.bold),),
                   ],
@@ -83,7 +84,7 @@ Future<List<TransactionModel>> myTransactions() async {
                     const Text(
                       'Amount: '
                     ),
-                    Text(transactionModel.amount,
+                    Text(transactionModel?.amount ?? "Loading",
                       style: TextStyle(fontWeight: FontWeight.bold),),
                   ],
                 ),
@@ -93,7 +94,7 @@ Future<List<TransactionModel>> myTransactions() async {
                     const Text(
                       'Status: '
                     ),
-                    Text(transactionModel.currentStatus,
+                    Text(transactionModel?.currentStatus ?? "Loading",
                       style: TextStyle(fontWeight: FontWeight.bold),),
                   ],
                 ),
@@ -105,7 +106,7 @@ Future<List<TransactionModel>> myTransactions() async {
                     ),
                     Expanded(
                       child: Text(
-                        transactionModel.trainName,
+                        transactionModel?.trainName ?? "Loading",
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis, // Handle overflow
                       style: TextStyle(fontWeight: FontWeight.bold)
@@ -120,7 +121,7 @@ Future<List<TransactionModel>> myTransactions() async {
                       'Train No: ',
                       
                     ),
-                    Text(transactionModel.trainNo,
+                    Text(transactionModel?.trainNo ?? "Loading",
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -130,7 +131,7 @@ Future<List<TransactionModel>> myTransactions() async {
                     const Text(
                       'Date: ',
                     ),
-                    Text(transactionModel.date,
+                    Text(transactionModel?.date ?? "Loading",
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
