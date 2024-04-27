@@ -425,7 +425,7 @@ debugPrint("No Stations Found yet");
               ),
               //['GN', 'LD', 'TQ']
               ListTile(
-                title: const Text('Ladies'),
+                title: const Text('Ladies (Error Prone)'),
                 onTap: () {
                   setState(() {
                     selectedQuota = 'LD';
@@ -434,7 +434,7 @@ debugPrint("No Stations Found yet");
                 },
               ),
               ListTile(
-                title: const Text('Tatkal'),
+                title: const Text('Tatkal (Error Prone)'),
                 onTap: () {
                   setState(() {
                     selectedQuota = 'TQ';

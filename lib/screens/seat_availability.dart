@@ -39,13 +39,14 @@ SeatAvailabilityService _seatAvailabilityService = SeatAvailabilityService();
             builder: (context,snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
+              } else if (snapshot.hasError ) {
 
 
           return CustomErrorWidget(errorMessage: snapshot.error.toString());
 
-
-              } else {
+              }
+              
+              else {
           return ListView.builder(
             itemCount: snapshot.data?.length,
            itemBuilder: (context, index) {

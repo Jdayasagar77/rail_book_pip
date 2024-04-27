@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,24 +9,29 @@ import 'package:rail_book_pip/models/payment_stripe.dart';
 import 'package:rail_book_pip/models/seatavailable.dart';
 import 'package:rail_book_pip/widgets/reusable_textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../models/train_model.dart';
 
+
+
 class PaymentPageStripe extends StatefulWidget {
-   
-    final Train myTrain;
-    final SeatAvailability mySeat;
-   PaymentPageStripe({super.key, required this.myTrain, required this.mySeat});
+
+  final Train myTrain;
+  final SeatAvailability mySeat;
+
+  PaymentPageStripe({super.key, required this.myTrain, required this.mySeat});
 
   @override
-  State<PaymentPageStripe> createState() => _PaymentPageStripeState(myTrain : this.myTrain, mySeat : this.mySeat);
+  State<PaymentPageStripe> createState() =>
+      _PaymentPageStripeState(myTrain: this.myTrain, mySeat: this.mySeat);
 }
 
 class _PaymentPageStripeState extends State<PaymentPageStripe> {
+
   final db = FirebaseFirestore.instance;
   Train myTrain;
-SeatAvailability mySeat;
-_PaymentPageStripeState({required this.myTrain, required  this.mySeat});
+  SeatAvailability mySeat;
+
+  _PaymentPageStripeState({required this.myTrain, required this.mySeat});
 
   TextEditingController amountController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -37,7 +41,6 @@ _PaymentPageStripeState({required this.myTrain, required  this.mySeat});
   TextEditingController stateController = TextEditingController();
   TextEditingController countryController = TextEditingController();
   TextEditingController pincodeController = TextEditingController();
-
 
   final formkey = GlobalKey<FormState>();
   final formkey1 = GlobalKey<FormState>();
@@ -64,102 +67,94 @@ _PaymentPageStripeState({required this.myTrain, required  this.mySeat});
 
   bool paymentCompleted = false;
   Duration paymentTimeoutDuration = const Duration(minutes: 7);
-  
-static String generateTransactionId() {
-  // Use a StringBuffer for efficient string building
-  final buffer = StringBuffer();
-  const length = 16;
-  const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  final random = Random();
-  for (int i = 0; i < length; i++) {
-    buffer.write(characters[random.nextInt(characters.length)]);
-  }
-  return buffer.toString();
-}
 
+  static String generateTransactionId() {
+    // Use a StringBuffer for efficient string building
+    final buffer = StringBuffer();
+    const length = 16;
+    const characters =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final random = Random();
+    for (int i = 0; i < length; i++) {
+      buffer.write(characters[random.nextInt(characters.length)]);
+    }
+    return buffer.toString();
+  }
 
   transactionRegistration() async {
-      final SharedPreferences prefs  = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     debugPrint('${prefs.getString('userUID')}');
-debugPrint(myTrain.trainName);
-debugPrint(myTrain.trainNumber);
-debugPrint(mySeat.currentStatus);
-debugPrint(mySeat.date);
-      
-        final transaction = <String, String> {
-          "name": nameController.text,
-          "transactionID": generateTransactionId(),
-          "amount": amountController.text,
-          "currentStatus": mySeat.currentStatus,
-           "trainName": myTrain.trainName,
-          "trainNo": myTrain.trainNumber,
-          "date": mySeat.date,
-        };
+    debugPrint(myTrain.trainName);
+    debugPrint(myTrain.trainNumber);
+    debugPrint(mySeat.currentStatus);
+    debugPrint(mySeat.date);
+
+    final transaction = <String, String>{
+      "name": nameController.text,
+      "transactionID": generateTransactionId(),
+      "amount": amountController.text,
+      "currentStatus": mySeat.currentStatus,
+      "trainName": myTrain.trainName,
+      "trainNo": myTrain.trainNumber,
+      "date": mySeat.date,
+    };
 
 // Add a new document with a generated ID
-      debugPrint(myTrain.trainName);
-debugPrint(myTrain.trainNumber);
-debugPrint(mySeat.currentStatus);
-debugPrint(mySeat.date);
+    debugPrint(myTrain.trainName);
+    debugPrint(myTrain.trainNumber);
+    debugPrint(mySeat.currentStatus);
+    debugPrint(mySeat.date);
 
-final userDocRef = db.collection("Users").doc(prefs.getString('userUID'));
+    final userDocRef = db.collection("Users").doc(prefs.getString('userUID'));
 
 // Create a reference to the subcollection within the user document
-final transactionCollectionRef = userDocRef.collection("transaction");
+    final transactionCollectionRef = userDocRef.collection("transaction");
 
 // Generate a unique document ID (optional, but recommended)
-final String transactionId =  DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final String transactionId =
+        DateFormat('yyyy-MM-dd').format(DateTime.now());
 // Create a new document within the subcollection
-transactionCollectionRef.add(transaction).then((documentSnapshot) =>
-    debugPrint("Added transaction Data with ID: ${documentSnapshot.id}"));
-            
-debugPrint('${prefs.getString('userUID')}');
+    transactionCollectionRef.add(transaction).then((documentSnapshot) =>
+        debugPrint("Added transaction Data with ID: ${documentSnapshot.id}"));
 
-        // ignore: use_build_context_synchronously
-       
-}
-  
+    debugPrint('${prefs.getString('userUID')}');
 
+    // ignore: use_build_context_synchronously
+  }
 
+  void startPaymentTimeout(context) {
+    int remainingSeconds = paymentTimeoutDuration.inSeconds;
 
+    Timer timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      remainingSeconds--;
+      if (remainingSeconds <= 0) {
+        timer.cancel();
+        handlePaymentTimeout();
+      } else {
+        SnackBar snackBar = SnackBar(
+          content: Text(
+              "Time remaining: ${remainingSeconds ~/ 60}:${remainingSeconds % 60}",
+              style: const TextStyle(fontSize: 20)),
+          backgroundColor: Colors.indigo,
+          dismissDirection: DismissDirection.up,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.only(
+              bottom: MediaQuery.of(context).size.height - 150,
+              left: 10,
+              right: 10),
+        );
 
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        //   debugPrint("Time remaining: ${remainingSeconds ~/ 60}:${remainingSeconds % 60}");
+      }
+    });
+  }
 
-
-void startPaymentTimeout(context) {
-
-  int remainingSeconds = paymentTimeoutDuration.inSeconds;
-
-  Timer timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-    remainingSeconds--;
-    if (remainingSeconds <= 0) {
-      timer.cancel();
-      handlePaymentTimeout();
-    } else {
-      SnackBar snackBar = SnackBar(
-      content: Text("Time remaining: ${remainingSeconds ~/ 60}:${remainingSeconds % 60}",
-          style: const TextStyle(fontSize: 20)),
-      backgroundColor: Colors.indigo,
-      dismissDirection: DismissDirection.up,
-      behavior: SnackBarBehavior.floating,
-      margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 150,
-          left: 10,
-          right: 10),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-   //   debugPrint("Time remaining: ${remainingSeconds ~/ 60}:${remainingSeconds % 60}");
-    }
-  });
-}
-
-void handlePaymentTimeout() {
-  print("Payment timeout: Payment process failed");
-  // Handle the payment timeout, for example, show a message to the user
-}
-
-    
+  void handlePaymentTimeout() {
+    print("Payment timeout: Payment process failed");
+    // Handle the payment timeout, for example, show a message to the user
+  }
 
   Future<void> initPaymentSheet() async {
     try {
@@ -315,10 +310,10 @@ void handlePaymentTimeout() {
                                   controller: ageController,
                                 ),
                               ),
-                              const Expanded(
+                               Expanded(
                                 flex: 5,
                                 child: Text(
-                                  'Class : SL',
+                                  'Seat : ${mySeat.currentStatus}',
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -402,7 +397,6 @@ void handlePaymentTimeout() {
                                     color: Colors.white, fontSize: 16),
                               ),
                               onPressed: () async {
-
                                 if (formkey.currentState!.validate() &&
                                     formkey1.currentState!.validate() &&
                                     formkey2.currentState!.validate() &&
@@ -410,12 +404,10 @@ void handlePaymentTimeout() {
                                     formkey4.currentState!.validate() &&
                                     formkey5.currentState!.validate() &&
                                     formkey6.currentState!.validate()) {
-
                                   await initPaymentSheet();
 
                                   try {
-
-                                   // startPaymentTimeout(context);
+                                    // startPaymentTimeout(context);
                                     await Stripe.instance.presentPaymentSheet();
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(const SnackBar(
@@ -425,15 +417,11 @@ void handlePaymentTimeout() {
                                       ),
                                       backgroundColor: Colors.green,
                                     ));
-transactionRegistration();
+                                    transactionRegistration();
 
                                     setState(() {
-
                                       hasDonated = true;
                                       paymentCompleted = true;
-
-
-
                                     });
 
                                     addressController.clear();
@@ -441,7 +429,6 @@ transactionRegistration();
                                     stateController.clear();
                                     countryController.clear();
                                     pincodeController.clear();
-
                                   } catch (e) {
                                     print("Payment Sheet failed");
                                     ScaffoldMessenger.of(context)
@@ -463,9 +450,11 @@ transactionRegistration();
       ),
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<TextEditingController>('nameController', nameController));
+    properties.add(DiagnosticsProperty<TextEditingController>(
+        'nameController', nameController));
   }
 }

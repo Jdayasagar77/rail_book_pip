@@ -4,8 +4,8 @@ class SeatAvailability {
   final int cateringCharge;
   final String totalFare;
   final String date;
-  final String confirmProbabilityPercent;
-  final String confirmProbability;
+  final String? confirmProbabilityPercent;
+  final String? confirmProbability;
   final String currentStatus;
 
   SeatAvailability({
