@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:rail_book_pip/models/train_model.dart';
 
@@ -19,11 +20,14 @@ class TrainSearchService {
     };
 
     try {
+
       final response = await http.get(url, headers: headers);
+      //  debugPrint(response as String?);
 
       if (response.statusCode == 200) {
         //Handle the response data as needed
         final responseData = jsonDecode(response.body);
+
         return List<Train>.from(
             responseData['data'].map((trainData) => Train.fromJson(trainData)));
       } else {
@@ -40,4 +44,5 @@ class TrainSearchService {
       throw Exception('An unexpected error occurred: $e');
     }
   }
+
 }

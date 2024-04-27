@@ -33,6 +33,8 @@ class SeatAvailabilityService {
         debugPrint('$responseData');
 
         if (responseData['status'] == true) {
+
+          
           return responseData['data']
               .map<SeatAvailability>(
                   (seatData) => SeatAvailability.fromJson(seatData))

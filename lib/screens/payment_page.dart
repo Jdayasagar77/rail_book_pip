@@ -82,6 +82,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
   }
 
   transactionRegistration() async {
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     debugPrint('${prefs.getString('userUID')}');
@@ -101,10 +102,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
     };
 
 // Add a new document with a generated ID
-    debugPrint(myTrain.trainName);
-    debugPrint(myTrain.trainNumber);
-    debugPrint(mySeat.currentStatus);
-    debugPrint(mySeat.date);
+
 
     final userDocRef = db.collection("Users").doc(prefs.getString('userUID'));
 
@@ -133,27 +131,30 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
         handlePaymentTimeout();
       } else {
         SnackBar snackBar = SnackBar(
-          content: Text(
-              "Time remaining: ${remainingSeconds ~/ 60}:${remainingSeconds % 60}",
-              style: const TextStyle(fontSize: 20)),
-          backgroundColor: Colors.indigo,
-          dismissDirection: DismissDirection.up,
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height - 150,
-              left: 10,
-              right: 10),
-        );
+      content: Text(
+          "Time remaining: ${remainingSeconds ~/ 60}:${remainingSeconds % 60}",
+          style: const TextStyle(fontSize: 10)),
+      backgroundColor: Colors.indigo,
+      dismissDirection: DismissDirection.up,
+      behavior: SnackBarBehavior.floating,
+      // Add a custom width property
+    //  width: MediaQuery.of(context).size.width * 0.1, // Adjust width as needed
+    );
 
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        //   debugPrint("Time remaining: ${remainingSeconds ~/ 60}:${remainingSeconds % 60}");
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
+
+       
+    if (hasDonated) {
+      timer.cancel(); // Stop the timer if payment is successful
+    }
     });
   }
 
   void handlePaymentTimeout() {
     print("Payment timeout: Payment process failed");
     // Handle the payment timeout, for example, show a message to the user
+
   }
 
   Future<void> initPaymentSheet() async {
@@ -195,6 +196,9 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
 
   @override
   Widget build(BuildContext context) {
+
+    amountController.text = mySeat.totalFare;
+
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -226,7 +230,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                           height: 16,
                         ),
                         Text(
-                          "Thanks for Booking Train Tickets on Rail PiP with Amount $selectedCurrency${amountController.text}",
+                          "Thanks for Booking Train Tickets on Rail PiP with Amount $selectedCurrency ${amountController.text}",
                           style: const TextStyle(
                             fontSize: 18,
                           ),
@@ -235,7 +239,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                     ),
                   )
                 : Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -254,6 +258,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                                 child: ReusableTextField(
                                     formkey: formkey,
                                     controller: amountController,
+                                    
                                     isNumber: true,
                                     title: "Payment Amount",
                                     hint: ""),
@@ -407,7 +412,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                                   await initPaymentSheet();
 
                                   try {
-                                    // startPaymentTimeout(context);
+                                    startPaymentTimeout(context);
                                     await Stripe.instance.presentPaymentSheet();
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(const SnackBar(
@@ -417,6 +422,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                                       ),
                                       backgroundColor: Colors.green,
                                     ));
+
                                     transactionRegistration();
 
                                     setState(() {

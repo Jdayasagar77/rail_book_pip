@@ -31,6 +31,7 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
           child: FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
+                                    debugPrint('${snapshot.data}');
                 return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
 

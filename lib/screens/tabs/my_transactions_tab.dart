@@ -75,7 +75,7 @@ Future<List<TransactionModel>> myTransactions() async {
                     ),
                     Text(transactionModel?.transactionID ?? "Loading"
                     ,
-                      style: TextStyle(fontWeight: FontWeight.bold),),
+                      style: const TextStyle(fontWeight: FontWeight.bold),),
                   ],
                 ),
                 const SizedBox(height: 4.0),
@@ -85,7 +85,7 @@ Future<List<TransactionModel>> myTransactions() async {
                       'Amount: '
                     ),
                     Text(transactionModel?.amount ?? "Loading",
-                      style: TextStyle(fontWeight: FontWeight.bold),),
+                      style: const TextStyle(fontWeight: FontWeight.bold),),
                   ],
                 ),
                 const SizedBox(height: 4.0),
@@ -95,7 +95,7 @@ Future<List<TransactionModel>> myTransactions() async {
                       'Status: '
                     ),
                     Text(transactionModel?.currentStatus ?? "Loading",
-                      style: TextStyle(fontWeight: FontWeight.bold),),
+                      style: const TextStyle(fontWeight: FontWeight.bold),),
                   ],
                 ),
                 const SizedBox(height: 4.0),
@@ -109,7 +109,7 @@ Future<List<TransactionModel>> myTransactions() async {
                         transactionModel?.trainName ?? "Loading",
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis, // Handle overflow
-                      style: TextStyle(fontWeight: FontWeight.bold)
+                      style: const TextStyle(fontWeight: FontWeight.bold)
                       ),
                     ),
                   ],
@@ -122,7 +122,7 @@ Future<List<TransactionModel>> myTransactions() async {
                       
                     ),
                     Text(transactionModel?.trainNo ?? "Loading",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
                 const SizedBox(height: 4.0),
@@ -132,7 +132,7 @@ Future<List<TransactionModel>> myTransactions() async {
                       'Date: ',
                     ),
                     Text(transactionModel?.date ?? "Loading",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ],
