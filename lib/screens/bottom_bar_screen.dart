@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/screens/tabs/home_tab.dart';
 import 'package:rail_book_pip/screens/tabs/my_account_tab.dart';
@@ -65,6 +64,3 @@ class _BottomTabBarScreenState extends State<BottomTabBarScreen> {
     );
   }
 }
-
-
-

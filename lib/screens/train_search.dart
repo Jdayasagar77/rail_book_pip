@@ -19,7 +19,7 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
 
   TrainSearchRequest trainAvailabilityParams;
 
-    TrainSearchService _trainService = TrainSearchService();
+  TrainSearchService _trainService = TrainSearchService();
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +31,11 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
           child: FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                                    debugPrint('${snapshot.data}');
+                debugPrint('${snapshot.data}');
                 return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
-
-               return CustomErrorWidget(errorMessage: snapshot.error.toString());
-              
+                return CustomErrorWidget(
+                    errorMessage: snapshot.error.toString());
               } else {
                 return ListView.builder(
                   itemCount: snapshot.data?.length,
@@ -45,21 +44,20 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SeatAvailabilityScreen(
-                                    seatAvailabilityParams:
-                                        SeatAvailabilityParams(
-                                            trainNo: train!.trainNumber,
-                                            fromStationCode: train.from,
-                                            toStationCode: train.to,
-                                            date: train.trainDate,
-                                            classType: trainAvailabilityParams.classType,
-                                            quota: trainAvailabilityParams.quota), myTrain: train,
-
-                                                ),
-                                                ),
-                                                );
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SeatAvailabilityScreen(
+                              seatAvailabilityParams: SeatAvailabilityParams(
+                                  trainNo: train!.trainNumber,
+                                  fromStationCode: train.from,
+                                  toStationCode: train.to,
+                                  date: train.trainDate,
+                                  classType: trainAvailabilityParams.classType,
+                                  quota: trainAvailabilityParams.quota),
+                              myTrain: train,
+                            ),
+                          ),
+                        );
                       },
                       child: Card(
                         elevation: 4,
@@ -152,9 +150,11 @@ class _TrainSearchScreenState extends State<TrainSearchScreen> {
                 );
               }
             },
-            future: _trainService.searchTrains(  trainAvailabilityParams.fromStationCode,
-      trainAvailabilityParams.toStationCode,
-      trainAvailabilityParams.date,),
+            future: _trainService.searchTrains(
+              trainAvailabilityParams.fromStationCode,
+              trainAvailabilityParams.toStationCode,
+              trainAvailabilityParams.date,
+            ),
           ),
         ));
   }

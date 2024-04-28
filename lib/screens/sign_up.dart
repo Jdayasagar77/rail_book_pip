@@ -201,8 +201,6 @@ class _SignUpState extends State<SignUp> {
                           },
                           controller: firstnamecontroller,
                           decoration: const InputDecoration(
-                                      
-
                               border: InputBorder.none,
                               hintText: "First Name",
                               hintStyle: TextStyle(
@@ -286,7 +284,7 @@ class _SignUpState extends State<SignUp> {
                           },
                           controller: mailcontroller,
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.mail),
+                              prefixIcon: Icon(Icons.mail),
                               border: InputBorder.none,
                               hintText: "Email",
                               hintStyle: TextStyle(
@@ -314,7 +312,7 @@ class _SignUpState extends State<SignUp> {
                           },
                           controller: mobilecontroller,
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.phone),
+                              prefixIcon: Icon(Icons.phone),
                               border: InputBorder.none,
                               hintText: "Mobile",
                               hintStyle: TextStyle(
@@ -334,7 +332,7 @@ class _SignUpState extends State<SignUp> {
                           validator: _validatePassword,
                           controller: passwordcontroller,
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.lock),
+                              prefixIcon: Icon(Icons.lock),
                               border: InputBorder.none,
                               hintText: "Password",
                               hintStyle: TextStyle(
