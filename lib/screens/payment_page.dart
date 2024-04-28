@@ -7,14 +7,12 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/intl.dart';
 import 'package:rail_book_pip/models/payment_stripe.dart';
 import 'package:rail_book_pip/models/seatavailable.dart';
+import 'package:rail_book_pip/screens/order_successful.dart';
 import 'package:rail_book_pip/widgets/reusable_textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/train_model.dart';
 
-
-
 class PaymentPageStripe extends StatefulWidget {
-
   final Train myTrain;
   final SeatAvailability mySeat;
 
@@ -26,7 +24,6 @@ class PaymentPageStripe extends StatefulWidget {
 }
 
 class _PaymentPageStripeState extends State<PaymentPageStripe> {
-
   final db = FirebaseFirestore.instance;
   Train myTrain;
   SeatAvailability mySeat;
@@ -61,12 +58,48 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
     'AED'
   ];
 
+
+
   String selectedCurrency = 'USD';
-
   bool hasDonated = false;
-
   bool paymentCompleted = false;
-  Duration paymentTimeoutDuration = const Duration(minutes: 7);
+  int duration = 7 * 60; // 7 minutes in seconds
+  Timer? timer;
+
+  void startTimer() {
+    if (timer != null) {
+      timer!.cancel();
+            timer = null;
+       // Cancel any existing timer before starting a new one
+    }
+    timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      setState(() { // Rebuild the widget to update the Text widget
+        if (duration > 0) {
+          duration--;
+        } else {
+ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    content: Text(
+      "Payment Timeout",
+      style: TextStyle(color: Colors.white),
+    ),
+    backgroundColor: Colors.redAccent,
+  ),
+  );
+          t.cancel();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel(); 
+                timer = null;
+                    // Cancel the timer when the widget is disposed
+    super.dispose();
+  }
+
+
 
   static String generateTransactionId() {
     // Use a StringBuffer for efficient string building
@@ -81,8 +114,14 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
     return buffer.toString();
   }
 
-  transactionRegistration() async {
+  void startPaymentTimeout(BuildContext context) {}
 
+  void handlePaymentTimeout() {
+    print("Payment timeout: Payment process failed");
+    // Handle the payment timeout, for example, show a message to the user
+  }
+
+  transactionRegistration() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     debugPrint('${prefs.getString('userUID')}');
@@ -103,7 +142,6 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
 
 // Add a new document with a generated ID
 
-
     final userDocRef = db.collection("Users").doc(prefs.getString('userUID'));
 
 // Create a reference to the subcollection within the user document
@@ -119,42 +157,6 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
     debugPrint('${prefs.getString('userUID')}');
 
     // ignore: use_build_context_synchronously
-  }
-
-  void startPaymentTimeout(context) {
-    int remainingSeconds = paymentTimeoutDuration.inSeconds;
-
-    Timer timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      remainingSeconds--;
-      if (remainingSeconds <= 0) {
-        timer.cancel();
-        handlePaymentTimeout();
-      } else {
-        SnackBar snackBar = SnackBar(
-      content: Text(
-          "Time remaining: ${remainingSeconds ~/ 60}:${remainingSeconds % 60}",
-          style: const TextStyle(fontSize: 10)),
-      backgroundColor: Colors.indigo,
-      dismissDirection: DismissDirection.up,
-      behavior: SnackBarBehavior.floating,
-      // Add a custom width property
-    //  width: MediaQuery.of(context).size.width * 0.1, // Adjust width as needed
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-
-       
-    if (hasDonated) {
-      timer.cancel(); // Stop the timer if payment is successful
-    }
-    });
-  }
-
-  void handlePaymentTimeout() {
-    print("Payment timeout: Payment process failed");
-    // Handle the payment timeout, for example, show a message to the user
-
   }
 
   Future<void> initPaymentSheet() async {
@@ -196,11 +198,35 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
 
   @override
   Widget build(BuildContext context) {
-
     amountController.text = mySeat.totalFare;
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title:    timer == null ?
+        const Text(
+                'Payment Page', // Format time for minutes and seconds
+                maxLines: 2,
+                style: TextStyle(
+                  fontSize: 24,
+                ),
+              )
+
+
+          :
+          
+           Expanded(
+             child: Text(
+                  'Time Remaining: ${duration ~/ 60}m ${duration % 60}s', // Format time for minutes and seconds
+                  maxLines: 2,
+                  style: const TextStyle(
+                    fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                  backgroundColor: Colors.black,
+                  color: Color.fromARGB(255, 255, 0, 0),
+                  ),
+                ),
+           ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -212,33 +238,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
               height: 100,
               fit: BoxFit.cover,
             ),
-            hasDonated
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        const Text(
-                          "Order Successfull",
-                          style: TextStyle(
-                              fontSize: 28, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Text(
-                          "Thanks for Booking Train Tickets on Rail PiP with Amount $selectedCurrency ${amountController.text}",
-                          style: const TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Padding(
+           Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +258,6 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                                 child: ReusableTextField(
                                     formkey: formkey,
                                     controller: amountController,
-                                    
                                     isNumber: true,
                                     title: "Payment Amount",
                                     hint: ""),
@@ -315,7 +314,7 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                                   controller: ageController,
                                 ),
                               ),
-                               Expanded(
+                              Expanded(
                                 flex: 5,
                                 child: Text(
                                   'Seat : ${mySeat.currentStatus}',
@@ -402,6 +401,8 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                                     color: Colors.white, fontSize: 16),
                               ),
                               onPressed: () async {
+
+startTimer();
                                 if (formkey.currentState!.validate() &&
                                     formkey1.currentState!.validate() &&
                                     formkey2.currentState!.validate() &&
@@ -411,41 +412,49 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                                     formkey6.currentState!.validate()) {
                                   await initPaymentSheet();
 
-                                  try {
-                                    startPaymentTimeout(context);
-                                    await Stripe.instance.presentPaymentSheet();
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                      content: Text(
-                                        "Payment Done",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      backgroundColor: Colors.green,
-                                    ));
+                           
+try {
 
-                                    transactionRegistration();
+       await Stripe.instance.presentPaymentSheet();
+   
 
-                                    setState(() {
-                                      hasDonated = true;
-                                      paymentCompleted = true;
-                                    });
 
-                                    addressController.clear();
-                                    cityController.clear();
-                                    stateController.clear();
-                                    countryController.clear();
-                                    pincodeController.clear();
-                                  } catch (e) {
-                                    print("Payment Sheet failed");
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                      content: Text(
-                                        "Payment Failed",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      backgroundColor: Colors.redAccent,
-                                    ));
-                                  }
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text(
+        "Payment Done",
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Colors.green,
+    ));
+    transactionRegistration();
+    addressController.clear();
+    cityController.clear();
+    stateController.clear();
+    countryController.clear();
+    pincodeController.clear();
+    setState(() {
+      timer?.cancel();
+timer = null;
+    });
+
+                        Navigator.push(context, MaterialPageRoute(builder: (context) =>  OrderSuccessfulPage(amount: amountController.text, selectedCurrency: selectedCurrency,)));
+
+
+
+} catch (e) {
+
+  print("Payment Sheet failed");
+
+// Add timer code
+  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    content: Text(
+      "Payment Failed",
+      style: TextStyle(color: Colors.white),
+    ),
+    backgroundColor: Colors.redAccent,
+  ),
+  );
+} 
                                 }
                               },
                             ),
