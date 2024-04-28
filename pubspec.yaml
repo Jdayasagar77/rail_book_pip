@@ -52,6 +52,8 @@ dependencies:
   google_fonts: ^6.2.1
   stripe_checkout: ^1.0.2
   flutter_stripe: ^10.1.1
+  flutter_dotenv: ^5.1.0
+  
   
 
 dev_dependencies:
@@ -64,6 +66,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -84,6 +87,7 @@ flutter:
     - assets/images/train2.jpg
     - assets/json/train.json
     - assets/json/seat_availability.json
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

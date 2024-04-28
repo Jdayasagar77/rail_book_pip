@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/models/seatavailable.dart';
@@ -10,8 +11,8 @@ class SeatAvailabilityService {
     const String apiUrl =
         'https://irctc1.p.rapidapi.com/api/v1/checkSeatAvailability';
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': '5960234c6emsh2e935864ecc8378p110471jsn851268f65c1f',
-      'X-RapidAPI-Host': 'irctc1.p.rapidapi.com',
+      'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
+      'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
     };
 
     final Map<String, String> queryParams = {

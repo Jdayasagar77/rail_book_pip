@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 Future createPaymentIntent(
@@ -13,8 +14,7 @@ Future createPaymentIntent(
     required String amount}) async {
   final url = Uri.parse('https://api.stripe.com/v1/payment_intents');
 
-  const secretKey =
-      "sk_test_51P8rqhSB16OkGfJwzSAwilmpAHUTQUcip8z7mnJeQXBvtx2PcvajjYireZF1foFly83lbnUCDh8pSfOQ6KPFsYnX00g0lrvXXK";
+  
 
   final body = {
     'amount': amount,
@@ -31,7 +31,7 @@ Future createPaymentIntent(
 
   final response = await http.post(url,
       headers: {
-        "Authorization": "Bearer $secretKey",
+        "Authorization": "Bearer ${dotenv.env["PAYMENT_KEY"]}",
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: body);
