@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
+import 'package:rail_book_pip/screens/order_successful.dart';
 import 'package:rail_book_pip/screens/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -218,7 +219,6 @@ if (FirebaseAuth.instance.currentUser != null) {
                 children: [
                   GestureDetector(
                     onTap: (){
-                    //  AuthMethods().signInWithGoogle(context);
 //
                     },
                     child: Image.asset(
@@ -232,8 +232,8 @@ if (FirebaseAuth.instance.currentUser != null) {
                     width: 30.0,
                   ),
                   GestureDetector(
-                    onTap: (){
-                    //  AuthMethods().signInWithApple();
+                    onTap: () {
+
                     },
                     child: Image.asset(
                       "assets/images/apple.png",

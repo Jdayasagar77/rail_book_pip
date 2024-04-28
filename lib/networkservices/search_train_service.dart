@@ -10,10 +10,10 @@ class TrainSearchService {
   Future<List<Train>> searchTrains(String fromStationCode, String toStationCode,
       String dateOfJourney) async {
 
-    const baseUrl = 'https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations';
+
 
     final url = Uri.parse(
-        '$baseUrl?fromStationCode=$fromStationCode&toStationCode=$toStationCode&dateOfJourney=$dateOfJourney');
+        '${dotenv.env["TRAIN_BTW_STN"]}?fromStationCode=$fromStationCode&toStationCode=$toStationCode&dateOfJourney=$dateOfJourney');
 
     final Map<String, String> headers = {
        'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',

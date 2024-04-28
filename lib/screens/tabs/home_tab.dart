@@ -30,14 +30,13 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
   Future<void> searchFromStations(String query) async {
 
-    const String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
    
     final Map<String, String> headers = {
      'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
       'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
     };
 
-    final Uri uri = Uri.parse(apiUrl);
+    final Uri uri = Uri.parse("${dotenv.env["SEARCH_STN"]}");
     final response = await http
         .get(uri.replace(queryParameters: {'query': query}), headers: headers);
 
@@ -77,13 +76,12 @@ _stationsFrom = List<Station>.from(responseData['data']
 
   Future<void> searchToStations(String query) async {
 
-    const String apiUrl = 'https://irctc1.p.rapidapi.com/api/v1/searchStation';
     final Map<String, String> headers = {
       'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
       'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
     };
 
-    final Uri uri = Uri.parse(apiUrl);
+    final Uri uri = Uri.parse("${dotenv.env["SEARCH_STN"]}");
     final response = await http
         .get(uri.replace(queryParameters: {'query': query}), headers: headers);
 

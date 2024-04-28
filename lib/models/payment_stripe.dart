@@ -12,7 +12,7 @@ Future createPaymentIntent(
     required String country,
     required String currency,
     required String amount}) async {
-  final url = Uri.parse('https://api.stripe.com/v1/payment_intents');
+  final url = Uri.parse('${dotenv.env["PAY_INTENTS"]}');
 
   
 
@@ -32,7 +32,7 @@ Future createPaymentIntent(
   final response = await http.post(url,
       headers: {
         "Authorization": "Bearer ${dotenv.env["PAYMENT_KEY"]}",
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': '${dotenv.env["CONTENT_TYPE"]}'
       },
       body: body);
 

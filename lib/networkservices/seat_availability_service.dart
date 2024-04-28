@@ -8,8 +8,7 @@ import 'package:rail_book_pip/models/seatavailable.dart';
 class SeatAvailabilityService {
   Future<List<SeatAvailability>> checkSeatAvailability(
       SeatAvailabilityParams seatAvailabilityParams) async {
-    const String apiUrl =
-        'https://irctc1.p.rapidapi.com/api/v1/checkSeatAvailability';
+
     final Map<String, String> headers = {
       'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
       'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
@@ -24,7 +23,7 @@ class SeatAvailabilityService {
       'date': seatAvailabilityParams.date,
     };
 
-    final Uri uri = Uri.parse(apiUrl).replace(queryParameters: queryParams);
+    final Uri uri = Uri.parse("${dotenv.env["CHECK_SEAT_AVAILABILITY"]}").replace(queryParameters: queryParams);
 
     try {
       final response = await http.get(uri, headers: headers);
