@@ -29,7 +29,7 @@ class _MyAccountTabState extends State<MyAccountTab> {
   }
 
   @override
-  void initState(){
+  void initState() {
     // TODO: implement initState
     super.initState();
 
@@ -43,13 +43,11 @@ class _MyAccountTabState extends State<MyAccountTab> {
             _data = data;
             _isLoading = true;
           });
-            
         },
         onError: (e) => print("Error getting document: $e"),
       );
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -63,26 +61,26 @@ class _MyAccountTabState extends State<MyAccountTab> {
         height: 200,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: const Color.fromARGB(255, 2, 2, 2), // Change the background color as needed
+          color: const Color.fromARGB(
+              255, 2, 2, 2), // Change the background color as needed
         ),
         child: Row(
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                width: 120,
-                height: 120,
-                clipBehavior: Clip.antiAlias,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: _isLoading
-                    ? Image.memory(
-                        base64Decode(_data['image']),
-                        fit: BoxFit.cover,
-                      )
-                    : const CircularProgressIndicator()
-              ),
+                  width: 120,
+                  height: 120,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                  ),
+                  child: _isLoading
+                      ? Image.memory(
+                          base64Decode(_data['image']),
+                          fit: BoxFit.cover,
+                        )
+                      : const CircularProgressIndicator()),
             ),
             Expanded(
               child: Column(
@@ -91,39 +89,43 @@ class _MyAccountTabState extends State<MyAccountTab> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: _isLoading ? Text(
-                      "${_data['firstname']}",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
-                    ) : const Text(
-                      "Loading...",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
-                    ) ,
+                    child: _isLoading
+                        ? Text(
+                            "${_data['firstname']}",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 255, 255, 255),
+                            ),
+                          )
+                        : const Text(
+                            "Loading...",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 255, 255, 255),
+                            ),
+                          ),
                   ),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 2),
-                    child: _isLoading ? Text(
-                      "${_data['email']}",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Color.fromARGB(255, 205, 255, 148),
-                      ),
-                    ) : const Text(
-                      "Loading...",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
-                    ) ,
+                    child: _isLoading
+                        ? Text(
+                            "${_data['email']}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color.fromARGB(255, 205, 255, 148),
+                            ),
+                          )
+                        : const Text(
+                            "Loading...",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 255, 255, 255),
+                            ),
+                          ),
                   ),
                 ],
               ),

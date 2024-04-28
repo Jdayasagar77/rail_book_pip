@@ -1,13 +1,10 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rail_book_pip/screens/bottom_bar_screen.dart';
 import 'package:rail_book_pip/screens/sign_up.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class Page1 extends StatelessWidget {
-
   const Page1({super.key});
 
   @override
@@ -17,22 +14,18 @@ class Page1 extends StatelessWidget {
       home: LogIn(),
     );
   }
-
 }
 
 class LogIn extends StatefulWidget {
-
   const LogIn({super.key});
 
   @override
   State<LogIn> createState() => _LogInState();
-
 }
-
 
 class _LogInState extends State<LogIn> {
   String email = "", password = "";
-late SharedPreferences prefs;
+  late SharedPreferences prefs;
 
 // Initialize shared preferences
   TextEditingController mailcontroller = new TextEditingController();
@@ -40,21 +33,22 @@ late SharedPreferences prefs;
 
   final _formkey = GlobalKey<FormState>();
 
- String? _validatePassword(String? value) {
+  String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
     // Define your password validation criteria here
     // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
-    final passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+    final passwordRegex =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (!passwordRegex.hasMatch(value)) {
-       ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
-            backgroundColor: Colors.orangeAccent,
-            content: Text(
-              'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
-              style: TextStyle(fontSize: 18.0),
-            )));
-     return 'Password must be at least 8 unique characters ';
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.orangeAccent,
+          content: Text(
+            'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
+            style: TextStyle(fontSize: 18.0),
+          )));
+      return 'Password must be at least 8 unique characters ';
     }
     return null;
   }
@@ -63,27 +57,27 @@ late SharedPreferences prefs;
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-                            prefs = await SharedPreferences.getInstance();
-                           prefs.setBool("isLoggedIn", true);
-                           prefs.setString('userEmail', email);
-                           prefs.setString('userPassword', password);
-if (FirebaseAuth.instance.currentUser != null) {
-  prefs.setString('userUID', FirebaseAuth.instance.currentUser!.uid);
-  
+      prefs = await SharedPreferences.getInstance();
+      prefs.setBool("isLoggedIn", true);
+      prefs.setString('userEmail', email);
+      prefs.setString('userPassword', password);
+      if (FirebaseAuth.instance.currentUser != null) {
+        prefs.setString('userUID', FirebaseAuth.instance.currentUser!.uid);
 
-  debugPrint(FirebaseAuth.instance.currentUser?.uid);
-}  
+        debugPrint(FirebaseAuth.instance.currentUser?.uid);
+      }
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const BottomTabBarScreen()));
     } on FirebaseAuthException catch (e) {
-        debugPrint('${e.message}');
+      debugPrint('${e.message}');
 
-      ScaffoldMessenger.of(context).showSnackBar( SnackBar(
-            backgroundColor: Colors.orangeAccent,
-            content: Text(
-              '${e.message}',
-              style: const TextStyle(fontSize: 18.0),
-            )));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.orangeAccent,
+          content: Text(
+            '${e.message}',
+            style: const TextStyle(fontSize: 18.0),
+          )));
     }
   }
 
@@ -95,7 +89,7 @@ if (FirebaseAuth.instance.currentUser != null) {
         child: Center(
           child: Column(
             children: [
-                const SizedBox(
+              const SizedBox(
                 height: 100.0,
               ),
               SizedBox(
@@ -115,27 +109,27 @@ if (FirebaseAuth.instance.currentUser != null) {
                   child: Column(
                     children: [
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 2.0, horizontal: 30.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 2.0, horizontal: 30.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
                           validator: (value) {
-                                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                            final emailRegex =
+                                RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
                             if (value == null || value.isEmpty) {
                               return 'Please Enter Email';
-                            } else  if (!emailRegex.hasMatch(value)) {
-                                      return 'Please Enter a Valid Email address';
-
-      } 
+                            } else if (!emailRegex.hasMatch(value)) {
+                              return 'Please Enter a Valid Email address';
+                            }
 
                             return null;
                           },
                           controller: mailcontroller,
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.mail),
+                              prefixIcon: Icon(Icons.mail),
                               border: InputBorder.none,
                               hintText: "Email",
                               hintStyle: TextStyle(
@@ -146,8 +140,8 @@ if (FirebaseAuth.instance.currentUser != null) {
                         height: 30.0,
                       ),
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 2.0, horizontal: 30.0),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 2.0, horizontal: 30.0),
                         decoration: BoxDecoration(
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
@@ -155,26 +149,26 @@ if (FirebaseAuth.instance.currentUser != null) {
                           controller: passwordcontroller,
                           validator: _validatePassword,
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.lock),
+                              prefixIcon: Icon(Icons.lock),
                               border: InputBorder.none,
                               hintText: "Password",
                               hintStyle: TextStyle(
                                   color: Color(0xFFb2b7bf), fontSize: 18.0)),
-                     obscureText: true,   ),
+                          obscureText: true,
+                        ),
                       ),
                       const SizedBox(
                         height: 30.0,
                       ),
                       GestureDetector(
-                        onTap: (){
-                          if(_formkey.currentState!.validate()){
+                        onTap: () {
+                          if (_formkey.currentState!.validate()) {
                             setState(() {
-                              email= mailcontroller.text;
-                              password=passwordcontroller.text;
+                              email = mailcontroller.text;
+                              password = passwordcontroller.text;
                             });
                           }
                           userLogin();
-
                         },
                         child: Container(
                             width: MediaQuery.of(context).size.width,
@@ -199,7 +193,6 @@ if (FirebaseAuth.instance.currentUser != null) {
               const SizedBox(
                 height: 20.0,
               ),
-             
               const SizedBox(
                 height: 40.0,
               ),
@@ -217,7 +210,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
 //
                     },
                     child: Image.asset(
@@ -231,9 +224,7 @@ if (FirebaseAuth.instance.currentUser != null) {
                     width: 30.0,
                   ),
                   GestureDetector(
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                     child: Image.asset(
                       "assets/images/apple.png",
                       height: 25,
@@ -259,8 +250,10 @@ if (FirebaseAuth.instance.currentUser != null) {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const SignUp()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignUp()));
                     },
                     child: const Text(
                       "SignUp",

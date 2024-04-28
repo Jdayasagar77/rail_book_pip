@@ -4,7 +4,9 @@ class OrderSuccessfulPage extends StatelessWidget {
   final String selectedCurrency;
   final String amount;
 
-  const OrderSuccessfulPage({Key? key, required this.selectedCurrency, required this.amount}) : super(key: key);
+  const OrderSuccessfulPage(
+      {Key? key, required this.selectedCurrency, required this.amount})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,8 @@ class OrderSuccessfulPage extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center content vertically
               children: [
                 const SizedBox(height: 10),
                 const Image(
@@ -26,7 +29,8 @@ class OrderSuccessfulPage extends StatelessWidget {
                   height: 100,
                   fit: BoxFit.cover,
                 ),
-                const SizedBox(height: 30), // Increased spacing for better balance
+                const SizedBox(
+                    height: 30), // Increased spacing for better balance
                 const Text(
                   "Order Successful",
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
@@ -35,7 +39,6 @@ class OrderSuccessfulPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    
                     "Thanks for Booking Train Tickets on Rail PiP with Amount $selectedCurrency $amount",
                     style: const TextStyle(fontSize: 18),
                     maxLines: 2,
@@ -48,7 +51,6 @@ class OrderSuccessfulPage extends StatelessWidget {
                     Navigator.pop(context); // Assuming you want to go back
                   },
                   child: const Text('Go Back'),
-                  
                 ),
               ],
             ),

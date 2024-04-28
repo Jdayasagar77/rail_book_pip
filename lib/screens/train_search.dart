@@ -15,6 +15,7 @@ class TrainSearchScreen extends StatefulWidget {
 }
 
 class _TrainSearchScreenState extends State<TrainSearchScreen> {
+  
   _TrainSearchScreenState({required this.trainAvailabilityParams});
 
   TrainSearchRequest trainAvailabilityParams;

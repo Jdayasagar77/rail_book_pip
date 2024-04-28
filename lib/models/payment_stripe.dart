@@ -14,8 +14,6 @@ Future createPaymentIntent(
     required String amount}) async {
   final url = Uri.parse('${dotenv.env["PAY_INTENTS"]}');
 
-  
-
   final body = {
     'amount': amount,
     'currency': currency.toLowerCase(),

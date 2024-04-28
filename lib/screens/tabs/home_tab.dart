@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:rail_book_pip/screens/train_search.dart';
 import 'package:rail_book_pip/models/train_searchrequest.dart';
 
-
 class HomeTab extends StatefulWidget {
   const HomeTab({Key? key}) : super(key: key);
 
@@ -17,7 +16,6 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
-
   TextEditingController _departurecontroller = TextEditingController();
 
   TextEditingController _fromstationController = TextEditingController();
@@ -26,56 +24,8 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
   List<Station> _stationsFrom = [];
   List<Station> _stationsTo = []; // Example station names
-  
 
   Future<void> searchFromStations(String query) async {
-
-   
-    final Map<String, String> headers = {
-     'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
-      'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
-    };
-
-    final Uri uri = Uri.parse("${dotenv.env["SEARCH_STN"]}");
-    final response = await http
-        .get(uri.replace(queryParameters: {'query': query}), headers: headers);
-
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-              debugPrint('$responseData');
-
-      if (responseData['status'] == true) {
-                      debugPrint(' From Station : $responseData');
-if (responseData['data'].isEmpty) {
-debugPrint("No Stations Found yet");
-} else {
-_stationsFrom = List<Station>.from(responseData['data']
-              .map((stationData) => Station.fromJson(stationData)));
-            showFromStation();
-}
-      } else {
-        // Handle error message from the API
-                debugPrint('Error: ${responseData['message']}');
-      }
-    } else {
-
-      // Handle HTTP error
-      debugPrint('HTTP Error: ${response.statusCode}');
-
-      // Handle HTTP error
-      debugPrint('HTTP Error: ${response.statusCode}');
-      ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(
-                        duration: const Duration(seconds: 5),
-                        content:
-                            Text('Error: ${response.body}'),
-                            ),
-        );
-    }
-  }
-
-  Future<void> searchToStations(String query) async {
-
     final Map<String, String> headers = {
       'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
       'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
@@ -87,20 +37,59 @@ _stationsFrom = List<Station>.from(responseData['data']
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
-              debugPrint(' To Station : $responseData');
+      debugPrint('$responseData');
 
       if (responseData['status'] == true) {
-
+        debugPrint(' From Station : $responseData');
         if (responseData['data'].isEmpty) {
-debugPrint("No Stations Found yet");
-} else {
+          debugPrint("No Stations Found yet");
+        } else {
+          _stationsFrom = List<Station>.from(responseData['data']
+              .map((stationData) => Station.fromJson(stationData)));
+          showFromStation();
+        }
+      } else {
+        // Handle error message from the API
+        debugPrint('Error: ${responseData['message']}');
+      }
+    } else {
+      // Handle HTTP error
+      debugPrint('HTTP Error: ${response.statusCode}');
+
+      // Handle HTTP error
+      debugPrint('HTTP Error: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 5),
+          content: Text('Error: ${response.body}'),
+        ),
+      );
+    }
+  }
+
+  Future<void> searchToStations(String query) async {
+    final Map<String, String> headers = {
+      'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
+      'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
+    };
+
+    final Uri uri = Uri.parse("${dotenv.env["SEARCH_STN"]}");
+    final response = await http
+        .get(uri.replace(queryParameters: {'query': query}), headers: headers);
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      debugPrint(' To Station : $responseData');
+
+      if (responseData['status'] == true) {
+        if (responseData['data'].isEmpty) {
+          debugPrint("No Stations Found yet");
+        } else {
           _stationsTo = List<Station>.from(responseData['data']
               .map((stationData) => Station.fromJson(stationData)));
-}
-       showToStation();
-
+        }
+        showToStation();
       } else {
-
         // Handle error message from the API
         debugPrint('Error: ${responseData['message']}');
       }
@@ -108,11 +97,10 @@ debugPrint("No Stations Found yet");
       // Handle HTTP error
       debugPrint('HTTP Error: ${response.statusCode}');
       ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(
-                        duration: const Duration(seconds: 5),
-                        content:
-                            Text('Error: ${response.body}')),
-                  );
+        SnackBar(
+            duration: const Duration(seconds: 5),
+            content: Text('Error: ${response.body}')),
+      );
     }
   }
 
@@ -152,7 +140,7 @@ debugPrint("No Stations Found yet");
             children: [
               TextFormField(
                 onChanged: (value) {
-                    searchFromStations(value);
+                  searchFromStations(value);
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -160,8 +148,6 @@ debugPrint("No Stations Found yet");
                   }
                   return null;
                 },
-                              
-                
                 controller: _fromstationController,
                 cursorColor: Colors.yellow,
                 decoration: const InputDecoration(
@@ -176,11 +162,8 @@ debugPrint("No Stations Found yet");
               const SizedBox(height: 12.0),
               TextFormField(
                 onChanged: (value) {
-                        searchToStations(value);
-          
-                                      
+                  searchToStations(value);
                 },
-          
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please Enter Station';
@@ -270,20 +253,22 @@ debugPrint("No Stations Found yet");
               ),
               const SizedBox(height: 12.0),
               ElevatedButton(
-                onPressed: (){
-                 
+                onPressed: () {
                   if (selectedClass.isNotEmpty &&
                       selectedFrom.isNotEmpty &&
                       selectedQuota.isNotEmpty &&
                       selectedTo.isNotEmpty &&
                       _departurecontroller.text.isNotEmpty) {
-
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-          
-                            builder: (context) => TrainSearchScreen(trainAvailabilityParams: TrainSearchRequest(classType: selectedClass, fromStationCode: selectedFrom, quota: selectedQuota, toStationCode: selectedTo, date: _departurecontroller.text))));
-                                
+                            builder: (context) => TrainSearchScreen(
+                                trainAvailabilityParams: TrainSearchRequest(
+                                    classType: selectedClass,
+                                    fromStationCode: selectedFrom,
+                                    quota: selectedQuota,
+                                    toStationCode: selectedTo,
+                                    date: _departurecontroller.text))));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -310,20 +295,22 @@ debugPrint("No Stations Found yet");
             itemCount: _stationsFrom.length,
             itemBuilder: (context, index) {
               final station = _stationsFrom[index];
-              return _stationsFrom.isEmpty ? const ListTile(title: Text("No Stations Found Yet"),
-                subtitle: Text("Search Again")) :
-                ListTile(
-                title: Text(station.name),
-                subtitle: Text(station.stateName),
-                trailing: Text(station.code),
-                onTap: () {
-                  setState(() {
-                    selectedFrom = station.code;
-                    _fromstationController.text = station.name;
-                    Navigator.pop(context);
-                  });
-                },
-              ); 
+              return _stationsFrom.isEmpty
+                  ? const ListTile(
+                      title: Text("No Stations Found Yet"),
+                      subtitle: Text("Search Again"))
+                  : ListTile(
+                      title: Text(station.name),
+                      subtitle: Text(station.stateName),
+                      trailing: Text(station.code),
+                      onTap: () {
+                        setState(() {
+                          selectedFrom = station.code;
+                          _fromstationController.text = station.name;
+                          Navigator.pop(context);
+                        });
+                      },
+                    );
             },
           ),
         );
@@ -341,21 +328,24 @@ debugPrint("No Stations Found yet");
             itemCount: _stationsTo.length,
             itemBuilder: (context, index) {
               final station = _stationsTo[index];
-              return _stationsTo.isEmpty ? const ListTile(title: Text("No Stations Found Yet"),
-                subtitle: Text("Search Again"),
-                ) : ListTile(
-                title: Text(station.name),
-                subtitle: Text(station.stateName),
-                trailing: Text(station.code),
-                onTap: () {
-                  setState(() {
-                    selectedTo = station.code;
-                    debugPrint(selectedTo);
-                    _tostationController.text = station.name;
-                    Navigator.pop(context);
-                  });
-                },
-              ); 
+              return _stationsTo.isEmpty
+                  ? const ListTile(
+                      title: Text("No Stations Found Yet"),
+                      subtitle: Text("Search Again"),
+                    )
+                  : ListTile(
+                      title: Text(station.name),
+                      subtitle: Text(station.stateName),
+                      trailing: Text(station.code),
+                      onTap: () {
+                        setState(() {
+                          selectedTo = station.code;
+                          debugPrint(selectedTo);
+                          _tostationController.text = station.name;
+                          Navigator.pop(context);
+                        });
+                      },
+                    );
             },
           ),
         );
