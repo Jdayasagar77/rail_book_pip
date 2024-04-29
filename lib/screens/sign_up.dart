@@ -39,11 +39,11 @@ class _SignUpState extends State<SignUp> {
     final passwordRegex =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (!passwordRegex.hasMatch(value)) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.orangeAccent,
           content: Text(
             'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
-            style: const TextStyle(fontSize: 18.0),
+            style: TextStyle(fontSize: 18.0),
           )));
       return 'Password must be at least 8 unique characters ';
     }

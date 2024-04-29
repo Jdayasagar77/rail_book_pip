@@ -433,6 +433,10 @@ class _PaymentPageStripeState extends State<PaymentPageStripe> {
                                                   selectedCurrency,
                                             )));
                               } catch (e) {
+                                setState(() {
+                                  timer?.cancel();
+                                  timer = null;
+                                });
                                 debugPrint("Payment Sheet failed");
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

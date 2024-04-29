@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rail_book_pip/controllers/exception_handling.dart';
+import 'package:rail_book_pip/widgets/exception_handling.dart';
 import 'package:rail_book_pip/models/seatavailable.dart';
 import 'package:rail_book_pip/models/train_searchrequest.dart';
 import 'package:rail_book_pip/networkservices/search_train_service.dart';
