@@ -118,7 +118,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           }
                         }
                       },
-                      onError: (e) => print("Error getting document: $e"),
+                      onError: (e) => debugPrint("Error getting document: $e"),
                     );
                   }
                 },
