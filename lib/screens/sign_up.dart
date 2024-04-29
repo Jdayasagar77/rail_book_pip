@@ -36,18 +36,7 @@ class _SignUpState extends State<SignUp> {
     }
     // Define your password validation criteria here
     // Example criteria: minimum length of 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
-    final passwordRegex =
-        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-    if (!passwordRegex.hasMatch(value)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          backgroundColor: Colors.orangeAccent,
-          content: Text(
-            'Password must be at least 8 characters long and include uppercase, lowercase, number, and special characters',
-            style: TextStyle(fontSize: 18.0),
-          )));
-      return 'Password must be at least 8 unique characters ';
-    }
-    return null;
+    
   }
 
   String display() {
