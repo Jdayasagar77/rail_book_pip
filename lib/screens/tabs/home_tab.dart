@@ -27,7 +27,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
   Future<void> searchFromStations(String query) async {
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
+      'X-RapidAPI-Key': '${dotenv.env["IRCTC"]}',
       'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
     };
 
@@ -69,7 +69,7 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
 
   Future<void> searchToStations(String query) async {
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
+      'X-RapidAPI-Key': '${dotenv.env["IRCTC"]}',
       'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
     };
 

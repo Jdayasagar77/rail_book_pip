@@ -12,7 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var status = prefs.getBool('isLoggedIn') ?? false;
-  Stripe.publishableKey="${dotenv.env["PUBLISH_KEY"]}";
+  Stripe.publishableKey="${dotenv.env["PUBLISH"]}";
   Stripe.merchantIdentifier = "${dotenv.env["MERCHANT_ID"]}";
   Stripe.urlScheme = 'flutterstripe';
   await Stripe.instance.applySettings();

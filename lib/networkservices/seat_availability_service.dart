@@ -9,7 +9,7 @@ class SeatAvailabilityService {
   Future<List<SeatAvailability>> checkSeatAvailability(
       SeatAvailabilityParams seatAvailabilityParams) async {
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
+      'X-RapidAPI-Key': '${dotenv.env["IRCTC"]}',
       'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
     };
 

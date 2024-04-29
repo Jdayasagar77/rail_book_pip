@@ -11,7 +11,7 @@ class TrainSearchService {
         '${dotenv.env["TRAIN_BTW_STN"]}?fromStationCode=$fromStationCode&toStationCode=$toStationCode&dateOfJourney=$dateOfJourney');
 
     final Map<String, String> headers = {
-      'X-RapidAPI-Key': '${dotenv.env["IRCTC_KEY"]}',
+      'X-RapidAPI-Key': '${dotenv.env["IRCTC"]}',
       'X-RapidAPI-Host': '${dotenv.env["IRCTC_HOST"]}',
     };
 

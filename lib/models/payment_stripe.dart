@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,7 +28,7 @@ Future createPaymentIntent(
 
   final response = await http.post(url,
       headers: {
-        "Authorization": "Bearer ${dotenv.env["PAYMENT_KEY"]}",
+        "Authorization": "Bearer ${dotenv.env["PAYMENT"]}",
         'Content-Type': '${dotenv.env["CONTENT_TYPE"]}'
       },
       body: body);
